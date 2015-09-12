@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:showDividers="middle"
+    android:gravity="fill_horizontal|top">
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ibnHome"
+        android:src="@drawable/ic_home_button" />
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ibnPlace"
+        android:src="@drawable/ic_place_button" />
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ibnPost"
+        android:src="@drawable/ic_post_button" />
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ibnProfile"
+        android:src="@drawable/ic_profile_button" />
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ibnSettings"
+        android:src="@drawable/ic_settings_button" />
+
+</LinearLayout>

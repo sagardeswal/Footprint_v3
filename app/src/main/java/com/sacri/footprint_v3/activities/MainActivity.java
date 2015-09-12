@@ -1,5 +1,7 @@
 package com.sacri.footprint_v3.activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bnAddPlace = (Button) findViewById(R.id.bnAddPlace);
+        //hide app place button
+        bnAddPlace.setVisibility(View.INVISIBLE);
         bnLogout = (Button) findViewById(R.id.bnLogout);
         bnAddPlace.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
         bnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                startActivity(intent);
+                finish();
+//                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+//                startActivity(intent);
             }
         });
     }

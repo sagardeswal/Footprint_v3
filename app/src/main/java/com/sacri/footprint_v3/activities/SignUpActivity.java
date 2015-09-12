@@ -59,8 +59,9 @@ public class SignUpActivity extends AppCompatActivity {
                 if(etPassword.getText().toString().equals(etReEnterPassword.getText().toString())){
                     newUser.setPaswordhashcode(etPassword.getText().toString());
                     storeUserDetials();
-                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
-                    startActivity(intent);
+                    finish();
+//                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
+//                    startActivity(intent);
                 }
                 else{
                     Toast.makeText(SignUpActivity.this, "Passwords don't match", Toast.LENGTH_SHORT).show();
