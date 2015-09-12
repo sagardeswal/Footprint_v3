@@ -41,6 +41,13 @@
             android:layout_below="@+id/bnAddPlace"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feed"
+            android:id="@+id/bnFeed"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 </RelativeLayout>

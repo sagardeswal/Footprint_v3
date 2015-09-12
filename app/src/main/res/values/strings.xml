@@ -34,5 +34,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="add_place_button_text">Add Place</string>
     <string name="logout_button_text">Logout</string>
+    <string name="title_activity_feed">FeedActivity</string>
 
 </resources>

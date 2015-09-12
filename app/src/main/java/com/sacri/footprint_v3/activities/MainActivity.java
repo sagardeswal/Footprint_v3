@@ -16,12 +16,21 @@ public class MainActivity extends AppCompatActivity {
 
     private Button bnAddPlace;
     private Button bnLogout;
+    private Button bnFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        bnFeed = (Button) findViewById(R.id.bnFeed);
+        bnFeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,FeedActivity.class);
+                startActivity(intent);
+            }
+        });
         bnAddPlace = (Button) findViewById(R.id.bnAddPlace);
         //hide app place button
         bnAddPlace.setVisibility(View.INVISIBLE);
