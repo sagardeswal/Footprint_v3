@@ -10,9 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.sacri.footprint_v3.R;
 
 public class MainActivity extends AppCompatActivity {
+
+    /* Client used to interact with Google APIs. */
+    private GoogleApiClient mGoogleApiClient;
 
     private Button bnAddPlace;
     private Button bnLogout;
@@ -42,9 +47,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         bnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                if (mGoogleApiClient.isConnected()) {
+//                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+//                    mGoogleApiClient.disconnect();
+//                }
                 finish();
 //                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
 //                startActivity(intent);
