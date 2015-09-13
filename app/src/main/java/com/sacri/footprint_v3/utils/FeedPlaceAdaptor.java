@@ -11,17 +11,17 @@ import android.widget.TextView;
 import com.sacri.footprint_v3.R;
 
 /**
- * Created by bazinga on 13/09/15.
+ * Created by Sagar Deswal on 13/09/15.
  */
-public class ViewPlacesAdaptor extends ArrayAdapter<String> {
-    public ViewPlacesAdaptor(Context context, String[] places) {
-        super(context, R.layout.view_place_row, places);
+public class FeedPlaceAdaptor extends ArrayAdapter<String> {
+    public FeedPlaceAdaptor(Context context, String[] places) {
+        super(context, R.layout.row_place_feed, places);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater placeInflator = LayoutInflater.from(getContext());
-        View viewPlaceRow = placeInflator.inflate(R.layout.view_place_row, parent, false);
+        View viewPlaceRow = placeInflator.inflate(R.layout.row_place_feed, parent, false);
 
         String place = getItem(position);
         TextView tvPlaceTitle = (TextView) viewPlaceRow.findViewById(R.id.tvPlaceTitle);

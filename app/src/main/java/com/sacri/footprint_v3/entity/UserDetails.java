@@ -1,7 +1,8 @@
 package com.sacri.footprint_v3.entity;
 
 /**
- * Created by bazinga on 11/09/15.
+ * Created by Sagar Deswal on 11/09/15.
+ *
  */
 public class UserDetails {
 
@@ -10,6 +11,21 @@ public class UserDetails {
     private String mobile;
     private String email;
     private String paswordhashcode;
+
+    public UserDetails() {
+    }
+
+    public UserDetails(String username, String paswordhashcode) {
+        this.username = username;
+        this.paswordhashcode = paswordhashcode;
+    }
+
+    public UserDetails(String username, String fullname, String mobile, String email) {
+        this.email = email;
+        this.fullname = fullname;
+        this.mobile = mobile;
+        this.username = username;
+    }
 
     public String getPaswordhashcode() {
         return paswordhashcode;

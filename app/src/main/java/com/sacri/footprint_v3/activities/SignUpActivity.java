@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.callback.GetUserCallback;
+import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -59,7 +61,6 @@ public class SignUpActivity extends AppCompatActivity {
                 if(etPassword.getText().toString().equals(etReEnterPassword.getText().toString())){
                     newUser.setPaswordhashcode(etPassword.getText().toString());
                     storeUserDetials();
-                    finish();
 //                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
 //                    startActivity(intent);
                 }
@@ -100,6 +101,14 @@ public class SignUpActivity extends AppCompatActivity {
         Log.i(FOOTPRINT_LOGGER,"UserDetails: Username: " + newUser.getUsername());
         Log.i(FOOTPRINT_LOGGER,"UserDetails: Email: " + newUser.getEmail());
         Log.i(FOOTPRINT_LOGGER,"UserDetails: Mobile: " + newUser.getMobile());
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.storeUserDataInBackground(newUser, new GetUserCallback() {
+            @Override
+            public void done(UserDetails returnedUserDetails) {
+                Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
     }
 }

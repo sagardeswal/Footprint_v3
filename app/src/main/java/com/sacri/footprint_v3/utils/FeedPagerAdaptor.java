@@ -1,12 +1,11 @@
 package com.sacri.footprint_v3.utils;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.sacri.footprint_v3.fragments.FeedFragment;
-import com.sacri.footprint_v3.fragments.ViewPlacesFragment;
+import com.sacri.footprint_v3.fragments.FeedPostFragment;
+import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 
 
 public class FeedPagerAdaptor extends FragmentPagerAdapter {
@@ -20,11 +19,11 @@ public class FeedPagerAdaptor extends FragmentPagerAdapter {
             case 0:
                 // The first section of the app is the most interesting -- it offers
                 // a launchpad into the other demonstrations in this example application.
-                return new FeedFragment();
+                return new FeedPostFragment();
 
             case 1:
 
-                return new ViewPlacesFragment();
+                return new FeedPlaceFragment();
             default:
                 return null;
         }

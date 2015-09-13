@@ -1,5 +1,6 @@
 package com.sacri.footprint_v3.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.callback.GetUserCallback;
+import com.sacri.footprint_v3.dbaccess.ServerRequests;
+import com.sacri.footprint_v3.entity.UserDetails;
 
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -41,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements
     private Button bnLogin;
     private Button bnSignUp;
     private TextView mStatusTextView;
-
+    private UserDetails userDetails;
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 
@@ -79,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements
         bnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this,SignUpActivity.class);
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
@@ -108,8 +112,29 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     public void loginUser(){
-        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-        startActivity(intent);
+
+        userDetails = new UserDetails(etUsername.getText().toString(),etPassword.getText().toString());
+        authenticate(userDetails);
+    }
+
+    public void authenticate(final UserDetails userDetails){
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.fetchUserDataInBackground(userDetails, new GetUserCallback() {
+            @Override
+            public void done(UserDetails returnedUserDetails) {
+
+                if (returnedUserDetails == null) {
+                    Log.i(FOOTPRINT_LOGGER, "returnedUserData is null");
+                    showErrorMessage();
+                    etPassword.setText("");
+                    etUsername.setText("");
+
+                } else {
+                    Log.i(FOOTPRINT_LOGGER, "returnedUserData: " + returnedUserDetails.toString());
+                    logUserIn();
+                }
+            }
+        });
     }
 
     @Override
@@ -150,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+//        mGoogleApiClient.connect();
     }
 
     @Override
@@ -203,5 +228,22 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    private void showErrorMessage(){
+        Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(LoginActivity.this);
+        dialogBuilder.setMessage("Incorrect User");
+        dialogBuilder.setPositiveButton("Ok", null);
+        dialogBuilder.show();
+    }
+
+    private void logUserIn(){
+        if(userDetails!=null) {
+            Log.i(FOOTPRINT_LOGGER, "userDetails!=null");
+            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 }

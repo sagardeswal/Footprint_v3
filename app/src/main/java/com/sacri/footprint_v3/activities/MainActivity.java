@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
 //                    mGoogleApiClient.disconnect();
 //                }
                 finish();
-//                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-//                startActivity(intent);
             }
         });
     }

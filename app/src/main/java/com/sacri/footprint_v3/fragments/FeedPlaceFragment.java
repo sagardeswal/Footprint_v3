@@ -11,9 +11,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.utils.ViewPlacesAdaptor;
+import com.sacri.footprint_v3.utils.FeedPlaceAdaptor;
 
-public class ViewPlacesFragment extends Fragment {
+public class FeedPlaceFragment extends Fragment {
 
 
     @Override
@@ -28,12 +28,12 @@ public class ViewPlacesFragment extends Fragment {
         String[] places = {"Qutab Minar", "India Gate", "Lotus Temple", "Connaught Place", "Chandni Chawk", "Hauz Khas Village", "Akshardham"};
 
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_view_places, container, false);
-        ListAdapter placesAdaptor = new ViewPlacesAdaptor(getActivity(),places);
+        View v = inflater.inflate(R.layout.fragment_place_feed, container, false);
+        ListAdapter feedPlaceAdaptor = new FeedPlaceAdaptor(getActivity(),places);
 
 
         ListView contentList = (ListView) v.findViewById(R.id.lvPlaces);
-        contentList.setAdapter(placesAdaptor);
+        contentList.setAdapter(feedPlaceAdaptor);
 
         contentList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener(){

@@ -1,0 +1,1 @@
+UPDATE fp_user_details SET active='1' WHERE usr_username='sagar18' and usr_passwordhashcode='a425352a84b14c7acb601495bd156322';
