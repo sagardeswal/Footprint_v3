@@ -56,6 +56,18 @@
             android:name=".activities.AddEventActivity"
             android:label="@string/title_activity_add_event" >
         </activity>
+        <activity
+            android:name=".activities.ViewPlaceProfileActivity"
+            android:label="@string/title_activity_view_place_profile" >
+        </activity>
+        <activity
+            android:name=".activities.ViewUserProfileActivity"
+            android:label="@string/title_activity_view_user_profile" >
+        </activity>
+        <activity
+            android:name=".activities.AppSettingsActivity"
+            android:label="@string/title_activity_app_settings" >
+        </activity>
     </application>
 
 </manifest>

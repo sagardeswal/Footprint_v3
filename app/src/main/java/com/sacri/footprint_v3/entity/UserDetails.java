@@ -1,11 +1,14 @@
 package com.sacri.footprint_v3.entity;
 
+import android.content.Intent;
+
 /**
  * Created by Sagar Deswal on 11/09/15.
  *
  */
 public class UserDetails {
 
+    private Integer userID;
     private String username;
     private String fullname;
     private String mobile;
@@ -65,5 +68,13 @@ public class UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 }

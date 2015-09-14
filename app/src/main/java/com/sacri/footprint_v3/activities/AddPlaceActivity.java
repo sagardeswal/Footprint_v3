@@ -34,7 +34,6 @@ public class AddPlaceActivity extends AppCompatActivity {
             manager.beginTransaction().add(R.id.fragmentContainer, fragment)
                     .commit();
         }
-
     }
 
     @Override

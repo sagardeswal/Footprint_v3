@@ -24,7 +24,10 @@ import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.AddPlaceActivity;
+import com.sacri.footprint_v3.callback.GetUserCallback;
+import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
+import com.sacri.footprint_v3.entity.UserDetails;
 
 import java.io.File;
 
@@ -40,6 +43,8 @@ public class AddPlaceFragment extends Fragment {
     private Button bnSave;
     private Button bnCancel;
     private ImageView ivPreview;
+
+    private PlaceDetails newPlace;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,16 +92,13 @@ public class AddPlaceFragment extends Fragment {
         bnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(FOOTPRINT_LOGGER,"bnSave clicked");
-                PlaceDetails placeDetails = ((AddPlaceActivity)getActivity()).getCurrentPlaceDetails();
-                placeDetails.setTitle(etTitle.getText().toString());
-                placeDetails.setDescription(etDescription.getText().toString());
-                placeDetails.setCategory(spCategory.getSelectedItem().toString());
-                placeDetails.setLocation(etLocation.getText().toString());
-
-                Toast.makeText(getActivity(),placeDetails.getTitle() +  " Added", Toast.LENGTH_SHORT).show();
-                getActivity().setResult(Activity.RESULT_OK);
-                getActivity().finish();
+                Log.i(FOOTPRINT_LOGGER, "bnSave clicked");
+                newPlace = ((AddPlaceActivity)getActivity()).getCurrentPlaceDetails();
+                newPlace.setTitle(etTitle.getText().toString());
+                newPlace.setDescription(etDescription.getText().toString());
+                newPlace.setCategory(spCategory.getSelectedItem().toString());
+                newPlace.setLocation(etLocation.getText().toString());
+                storePlaceDetials();
             }
         });
 
@@ -145,5 +147,22 @@ public class AddPlaceFragment extends Fragment {
             ivPreview.setVisibility(View.VISIBLE);
             ivPreview.setImageBitmap(bitmap);
         }
+    }
+
+    private void storePlaceDetials(){
+
+        Log.i(FOOTPRINT_LOGGER, "PlaceDetails: Title: " + newPlace.getTitle());
+        Log.i(FOOTPRINT_LOGGER,"PlaceDetails: Description: " + newPlace.getDescription());
+        Log.i(FOOTPRINT_LOGGER,"PlaceDetails: Location: " + newPlace.getLocation());
+        Log.i(FOOTPRINT_LOGGER, "PlaceDetails: Category: " + newPlace.getCategory());
+
+        ServerRequests serverRequests = new ServerRequests(getActivity());
+        serverRequests.storePlaceDataInBackground(newPlace, new GetUserCallback() {
+            @Override
+            public void done(UserDetails returnedUserDetails) {
+                Toast.makeText(getActivity(), "Place Added Successfully", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            }
+        });
     }
 }

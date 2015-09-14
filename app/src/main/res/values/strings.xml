@@ -37,5 +37,10 @@
     <string name="title_activity_feed">FeedActivity</string>
     <string name="signing_in">Signing In</string>
     <string name="title_activity_add_event">AddEventActivity</string>
+    <string name="title_activity_view_place_profile">ViewPlaceProfileActivity</string>
+    <string name="title_activity_view_user_profile">ViewUserProfileActivity</string>
+    <string name="title_activity_app_settings">AppSettingsActivity</string>
+    <string name="name_label_text">Name</string>
+    <string name="change_password_button_text">Change Password</string>
 
 </resources>
