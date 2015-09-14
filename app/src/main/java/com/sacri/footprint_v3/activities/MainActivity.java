@@ -13,11 +13,13 @@ import android.widget.Button;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.utils.UserLocalStore;
 
 public class MainActivity extends AppCompatActivity {
 
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
+    private UserLocalStore userLocalStore;
 
     private Button bnAddPlace;
     private Button bnLogout;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        userLocalStore = new UserLocalStore(this);
 
         bnFeed = (Button) findViewById(R.id.bnFeed);
         bnFeed.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
 //                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 //                    mGoogleApiClient.disconnect();
 //                }
+                userLocalStore.clearUserData();
+                userLocalStore.setUserLoggedIn(false);
                 finish();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
     }

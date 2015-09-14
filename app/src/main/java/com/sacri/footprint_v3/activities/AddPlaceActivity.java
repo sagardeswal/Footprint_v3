@@ -62,4 +62,10 @@ public class AddPlaceActivity extends AppCompatActivity {
     public PlaceDetails getCurrentPlaceDetails(){
         return newPlace;
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 }

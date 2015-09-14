@@ -23,6 +23,7 @@ import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
+import com.sacri.footprint_v3.utils.UserLocalStore;
 
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -40,6 +41,8 @@ public class LoginActivity extends AppCompatActivity implements
     /* Should we automatically resolve ConnectionResults when possible? */
     private boolean mShouldResolve = false;
 
+    private UserLocalStore userLocalStore;
+
     private EditText etUsername;
     private EditText etPassword;
     private Button bnLogin;
@@ -54,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        userLocalStore = new UserLocalStore(this);
+
 
         // Build GoogleApiClient with access to basic profile
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -176,6 +181,11 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
 //        mGoogleApiClient.connect();
+        if(userLocalStore.getUserLoggedIn()){
+            Intent intent = new Intent(this,MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -239,6 +249,8 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void logUserIn(){
+        userLocalStore.storeUserData(userDetails);
+        userLocalStore.setUserLoggedIn(true);
         if(userDetails!=null) {
             Log.i(FOOTPRINT_LOGGER, "userDetails!=null");
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();

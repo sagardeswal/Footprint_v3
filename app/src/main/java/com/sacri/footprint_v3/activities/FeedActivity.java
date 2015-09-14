@@ -105,4 +105,10 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

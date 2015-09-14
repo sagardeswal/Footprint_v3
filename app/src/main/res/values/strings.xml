@@ -36,5 +36,6 @@
     <string name="logout_button_text">Logout</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="signing_in">Signing In</string>
+    <string name="title_activity_add_event">AddEventActivity</string>
 
 </resources>

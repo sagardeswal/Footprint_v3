@@ -7,18 +7,18 @@ import android.view.MenuItem;
 
 import com.sacri.footprint_v3.R;
 
-public class AddPostActivity extends AppCompatActivity {
+public class AddEventActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_post);
+        setContentView(R.layout.activity_add_event);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_post, menu);
+        getMenuInflater().inflate(R.menu.menu_add_event, menu);
         return true;
     }
 
@@ -35,11 +35,5 @@ public class AddPostActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        super.onBackPressed();
     }
 }
