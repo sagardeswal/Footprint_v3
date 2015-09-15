@@ -82,4 +82,17 @@ public class PlaceDetails {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String toString() {
+        return "PlaceDetails{" +
+                "category='" + category + '\'' +
+                ", placeID=" + placeID +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", location='" + location + '\'' +
+                ", isActive=" + isActive +
+                ", photoFile=" + photoFile +
+                '}';
+    }
 }

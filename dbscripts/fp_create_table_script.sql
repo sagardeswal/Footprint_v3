@@ -20,3 +20,17 @@ CREATE TABLE  `a6596261_footp`.`fp_place_details` (
 `active` INT( 1 ) NOT NULL DEFAULT  '1',
 PRIMARY KEY (  `pl_ID` )
 ) ENGINE = MYISAM
+
+CREATE TABLE  `a6596261_footp`.`fp_usr_images` (
+`img_id` INT( 2 ) NOT NULL AUTO_INCREMENT ,
+`img_usr_id` INT( 2 ) NOT NULL ,
+`img_blob` LONGBLOB NOT NULL ,
+PRIMARY KEY (  `img_id` )
+) ENGINE = MYISAM
+
+CREATE TABLE  `a6596261_footp`.`fp_pl_images` (
+`img_id` INT( 2 ) NOT NULL AUTO_INCREMENT ,
+`img_pl_id` INT( 2 ) NOT NULL ,
+`img_blob` LONGBLOB NOT NULL ,
+PRIMARY KEY (  `img_id` )
+) ENGINE = MYISAM

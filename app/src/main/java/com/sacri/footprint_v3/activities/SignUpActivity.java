@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.callback.GetUserCallback;
+import com.sacri.footprint_v3.callback.RegisterUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
 
@@ -60,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
                 //Check if Password fields match
                 if(etPassword.getText().toString().equals(etReEnterPassword.getText().toString())){
                     newUser.setPaswordhashcode(etPassword.getText().toString());
-                    storeUserDetials();
+                    storeUserDetails();
 //                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
 //                    startActivity(intent);
                 }
@@ -95,18 +95,30 @@ public class SignUpActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void storeUserDetials(){
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
 
-        Log.i(FOOTPRINT_LOGGER,"UserDetails: FullName: " + newUser.getFullname());
-        Log.i(FOOTPRINT_LOGGER,"UserDetails: Username: " + newUser.getUsername());
-        Log.i(FOOTPRINT_LOGGER,"UserDetails: Email: " + newUser.getEmail());
-        Log.i(FOOTPRINT_LOGGER,"UserDetails: Mobile: " + newUser.getMobile());
+    private void storeUserDetails(){
+
+        Log.i(FOOTPRINT_LOGGER, "userDetails : " + newUser.toString());
         ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.storeUserDataInBackground(newUser, new GetUserCallback() {
+        serverRequests.registerUserInBackground(newUser, new RegisterUserCallback() {
             @Override
-            public void done(UserDetails returnedUserDetails) {
-                Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
-                finish();
+            public void done(String response) {
+                if(!response.contains(newUser.getUsername())) {
+                    Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(SignUpActivity.this, "Username/Email already exits", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -3,12 +3,15 @@ package com.sacri.footprint_v3.fragments;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +27,13 @@ import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.AddPlaceActivity;
+import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.callback.GetUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.entity.UserDetails;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 
@@ -43,6 +48,10 @@ public class AddPlaceFragment extends Fragment {
     private Button bnSave;
     private Button bnCancel;
     private ImageView ivPreview;
+
+    private int PICK_IMAGE_REQUEST = 1;
+    private Bitmap bitmap;
+    private Uri filePath;
 
     private PlaceDetails newPlace;
 
@@ -115,7 +124,7 @@ public class AddPlaceFragment extends Fragment {
     }
 
     private boolean hasCamera(Context context){
-        Log.i(FOOTPRINT_LOGGER,"hasCamera()");
+        Log.i(FOOTPRINT_LOGGER, "hasCamera()");
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             // this device has a camera
             return true;
@@ -126,7 +135,7 @@ public class AddPlaceFragment extends Fragment {
     }
 
     public void startCamera() {
-        Log.i(FOOTPRINT_LOGGER,"startCamera()");
+        Log.i(FOOTPRINT_LOGGER, "startCamera()");
         Fragment cameraFragment = new CameraFragment();
         FragmentTransaction transaction = getActivity().getFragmentManager()
                 .beginTransaction();
@@ -151,18 +160,30 @@ public class AddPlaceFragment extends Fragment {
 
     private void storePlaceDetials(){
 
-        Log.i(FOOTPRINT_LOGGER, "PlaceDetails: Title: " + newPlace.getTitle());
-        Log.i(FOOTPRINT_LOGGER,"PlaceDetails: Description: " + newPlace.getDescription());
-        Log.i(FOOTPRINT_LOGGER,"PlaceDetails: Location: " + newPlace.getLocation());
-        Log.i(FOOTPRINT_LOGGER, "PlaceDetails: Category: " + newPlace.getCategory());
+        Log.i(FOOTPRINT_LOGGER, "PlaceDetails: " + newPlace.toString());
 
         ServerRequests serverRequests = new ServerRequests(getActivity());
-        serverRequests.storePlaceDataInBackground(newPlace, new GetUserCallback() {
+        serverRequests.addPlaceDataInBackground(newPlace, new AddPlaceCallback() {
             @Override
-            public void done(UserDetails returnedUserDetails) {
+            public void done(String response) {
                 Toast.makeText(getActivity(), "Place Added Successfully", Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         });
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    public String getStringImage(Bitmap bmp){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
     }
 }

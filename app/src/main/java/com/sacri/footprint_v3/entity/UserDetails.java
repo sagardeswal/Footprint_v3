@@ -77,4 +77,16 @@ public class UserDetails {
     public void setUserID(Integer userID) {
         this.userID = userID;
     }
+
+    @Override
+    public String toString() {
+        return "UserDetails{" +
+                "email='" + email + '\'' +
+                ", userID=" + userID +
+                ", username='" + username + '\'' +
+                ", fullname='" + fullname + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", paswordhashcode='" + paswordhashcode + '\'' +
+                '}';
+    }
 }

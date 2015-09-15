@@ -21,6 +21,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetUserCallback;
+import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
 import com.sacri.footprint_v3.utils.UserLocalStore;
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements
     private Button bnLogin;
     private Button bnSignUp;
     private TextView mStatusTextView;
-    private UserDetails userDetails;
+//    private UserDetails userDetails;
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 
@@ -118,13 +119,13 @@ public class LoginActivity extends AppCompatActivity implements
 
     public void loginUser(){
 
-        userDetails = new UserDetails(etUsername.getText().toString(),etPassword.getText().toString());
+        UserDetails userDetails = new UserDetails(etUsername.getText().toString(),etPassword.getText().toString());
         authenticate(userDetails);
     }
 
     public void authenticate(final UserDetails userDetails){
         ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchUserDataInBackground(userDetails, new GetUserCallback() {
+        serverRequests.loginUserInBackground(userDetails, new LoginUserCallback() {
             @Override
             public void done(UserDetails returnedUserDetails) {
 
@@ -133,10 +134,12 @@ public class LoginActivity extends AppCompatActivity implements
                     showErrorMessage();
                     etPassword.setText("");
                     etUsername.setText("");
+                    etUsername.bringToFront();
 
                 } else {
-                    Log.i(FOOTPRINT_LOGGER, "returnedUserData: " + returnedUserDetails.toString());
-                    logUserIn();
+                    Log.i(FOOTPRINT_LOGGER, "returnedUserData: " + returnedUserDetails.getUsername());
+
+                    logUserIn(returnedUserDetails);
                 }
             }
         });
@@ -185,6 +188,7 @@ public class LoginActivity extends AppCompatActivity implements
             Intent intent = new Intent(this,MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -248,14 +252,15 @@ public class LoginActivity extends AppCompatActivity implements
         dialogBuilder.show();
     }
 
-    private void logUserIn(){
-        userLocalStore.storeUserData(userDetails);
+    private void logUserIn(UserDetails returnedUserDetails){
+        userLocalStore.storeUserData(returnedUserDetails);
         userLocalStore.setUserLoggedIn(true);
-        if(userDetails!=null) {
-            Log.i(FOOTPRINT_LOGGER, "userDetails!=null");
+        if(returnedUserDetails!=null) {
+            Log.i(FOOTPRINT_LOGGER, "returnedUserDetails=" + returnedUserDetails.getUsername());
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 }
