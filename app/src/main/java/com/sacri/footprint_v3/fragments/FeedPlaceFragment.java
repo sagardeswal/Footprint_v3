@@ -14,12 +14,9 @@ import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
-import com.sacri.footprint_v3.callback.GetUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
-import com.sacri.footprint_v3.entity.UserDetails;
 import com.sacri.footprint_v3.utils.FeedPlaceAdaptor;
-
 import java.util.ArrayList;
 
 public class FeedPlaceFragment extends Fragment {

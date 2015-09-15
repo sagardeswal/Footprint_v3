@@ -28,11 +28,8 @@ import android.widget.Toast;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.AddPlaceActivity;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
-import com.sacri.footprint_v3.callback.GetUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
-import com.sacri.footprint_v3.entity.UserDetails;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
