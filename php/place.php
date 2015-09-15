@@ -5,7 +5,7 @@
 	$description = $_POST["pl_description"];
 	$location = $_POST["pl_location"];
 	$category = $_POST["pl_category"];
-	$image = $_POST["pl_image"];
+	
 	if(isset($title) && !empty($title) AND isset($description) && !empty($description) AND isset($location) && !empty($location) AND isset($category) && !empty($category))
 	{
 		$statement = mysqli_prepare($con, "INSERT INTO fp_place_details (pl_title, pl_description, pl_location, pl_category) VALUES (?,?,?,?)") or die(mysql_error());
@@ -19,12 +19,16 @@
 	mysqli_stmt_execute($statement);
 	mysqli_stmt_store_result($statement);
 	mysqli_stmt_bind_result($statement, $pl_ID);
+	mysqli_stmt_close($statement);
+		
+	// $image = $_POST["pl_image"];
+	// if(isset($image) && !empty($image)){
 
-	if(isset($image) && !empty($image)){
+	// 	$statement = mysqli_prepare($con, "INSERT INTO fp_pl_images (img_pl_id, img_blob) VALUES (?,?)") or die(mysql_error());
+	// 	mysqli_stmt_bind_param($statement,"is",$pl_ID,$image);
+	// 	mysqli_stmt_execute($statement);
+	// 	mysqli_stmt_close($statement);
 
-		$statement = mysqli_prepare($con, "INSERT INTO fp_pl_images (img_pl_id, img_blob) VALUES (?,?)") or die(mysql_error());
-		mysqli_stmt_bind_param($statement,"is",$pl_ID,$image);
-		mysqli_stmt_execute($statement);
-	} 
+	// } 
 	mysqli_close($con);
 ?>

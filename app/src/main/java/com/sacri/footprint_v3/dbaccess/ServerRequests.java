@@ -2,6 +2,7 @@ package com.sacri.footprint_v3.dbaccess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -14,7 +15,10 @@ import java.util.Map;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
@@ -53,6 +57,28 @@ public class ServerRequests {
         progressDialog.setMessage("Please wait..");
     }
 
+
+    public String sendGetRequest(String uri) {
+        try {
+            URL url = new URL(uri);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+            String result;
+
+            StringBuilder sb = new StringBuilder();
+
+            while((result = bufferedReader.readLine())!=null){
+                sb.append(result);
+            }
+
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
     public String sendPostRequest(String requestURL,
                                   HashMap<String, String> postDataParams) {
 
@@ -62,8 +88,8 @@ public class ServerRequests {
             url = new URL(requestURL);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(15000);
-            conn.setConnectTimeout(15000);
+//            conn.setReadTimeout(CONNECTION_TIMEOUT);
+//            conn.setConnectTimeout(CONNECTION_TIMEOUT);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -252,6 +278,10 @@ public class ServerRequests {
             data.put("pl_description", placeDetails.getDescription());
             data.put("pl_location",placeDetails.getLocation());
             data.put("pl_category",placeDetails.getCategory());
+            String filePath = placeDetails.getPhotoFile().getPath();
+            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+            String imageString = getStringImage(bitmap);
+//            data.put("pl_image",imageString);
             Log.i(FOOTPRINT_LOGGER, "placeDetails : " + placeDetails.toString());
             try {
                 String result = sendPostRequest(ADD_PLACE_URL, data);
@@ -335,5 +365,13 @@ public class ServerRequests {
             getPlaceCallback.done(placeDetailsArrayList);
             super.onPostExecute(placeDetailsArrayList);
         }
+    }
+
+    public String getStringImage(Bitmap bmp){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
     }
 }
