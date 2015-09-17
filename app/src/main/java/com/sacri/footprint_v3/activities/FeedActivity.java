@@ -52,15 +52,20 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
         buildGoogleApiClient();
-        final ActionBar actionBar = getSupportActionBar();
+
 
         getPlacesInBackground();
         getEventsInBackground();
 
+
+
+    }
+
+    private void displayFeedPager(){
+        final ActionBar actionBar = getSupportActionBar();
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
         actionBar.setHomeButtonEnabled(false);
-
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
         mFeedPagerAdaptor = new FeedPagerAdaptor(getSupportFragmentManager());
@@ -102,6 +107,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                             .setText(pageTitle)
                             .setTabListener(this));
         }
+
     }
 
     @Override
@@ -231,6 +237,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
                     setMPlaceDetailsArrayList(placeDetailsArrayList);
                 }
+                displayFeedPager();
             }
         });
     }
