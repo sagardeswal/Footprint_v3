@@ -24,12 +24,15 @@ public class EventDetails {
     public EventDetails() {
     }
 
-    public EventDetails(Date endDate, Integer endTimeHour, Integer endTimeMinutes, String eventDescription, String eventTitle, Boolean repeatedWeekly, Date startDate, Integer startTimeHour, Integer startTimeMinutes) {
+    public EventDetails(String eventTitle, String eventDescription, Boolean repeatedWeekly, Date startDate, Date endDate, Integer startTimeHour, Integer startTimeMinutes, Integer endTimeHour, Integer endTimeMinutes, Double longitude, Double latitude, String address) {
+        this.address = address;
         this.endDate = endDate;
         this.endTimeHour = endTimeHour;
         this.endTimeMinutes = endTimeMinutes;
         this.eventDescription = eventDescription;
         this.eventTitle = eventTitle;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.repeatedWeekly = repeatedWeekly;
         this.startDate = startDate;
         this.startTimeHour = startTimeHour;

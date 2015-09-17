@@ -15,20 +15,15 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
-
-import java.sql.Timestamp;
 import java.util.Date;
 
 public class AddEventActivity extends AppCompatActivity {

@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sacri.footprint_v3.fragments.FeedPlaceFragment">
+    tools:context="com.sacri.footprint_v3.fragments.FeedEventFragment">
 
     <LinearLayout
         android:orientation="vertical"
@@ -13,6 +13,6 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/lvPlaces"/>
+            android:id="@+id/lvEvents"/>
     </LinearLayout>
 </FrameLayout>

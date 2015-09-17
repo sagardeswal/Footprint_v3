@@ -18,8 +18,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.callback.GetEventCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
+import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
 
@@ -40,6 +42,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
      */
     protected Location mLastLocation;
     public static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
+    public static ArrayList<EventDetails> mEventDetailsArrayList;
 
 
     @Override
@@ -52,6 +55,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
 
         getPlacesInBackground();
+        getEventsInBackground();
 
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
@@ -87,7 +91,9 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                     break;
                 case 1: pageTitle = "Places";
                     break;
-                case 2: pageTitle = "Map";
+                case 2: pageTitle = "Events";
+                    break;
+                case 3: pageTitle = "Map";
                     break;
                 default:pageTitle = "Home";
             }
@@ -202,7 +208,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
 
     public GoogleApiClient getmGoogleApiClient(){
-        Log.i(FOOTPRINT_LOGGER,"getmGoogleApiClient()");
+        Log.i(FOOTPRINT_LOGGER, "getmGoogleApiClient()");
         return mGoogleApiClient;
     }
 
@@ -233,8 +239,34 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         mPlaceDetailsArrayList = placeDetailsArrayList;
     }
 
-    public ArrayList<PlaceDetails> getPlaceDetailsArrayList(){
+    public ArrayList<PlaceDetails> getMPlaceDetailsArrayList(){
         return mPlaceDetailsArrayList;
+    }
+
+    private void getEventsInBackground(){
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.fetchEventDataInBackground(new GetEventCallback() {
+            @Override
+            public void done(ArrayList<EventDetails> eventDetailsArrayList) {
+
+                if (eventDetailsArrayList == null) {
+                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is null");
+                    showErrorMessage();
+
+                } else {
+                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.toString());
+                    setMEventDetailsArrayList(eventDetailsArrayList);
+                }
+            }
+        });
+    }
+
+    public void setMEventDetailsArrayList(ArrayList<EventDetails> eventDetailsArrayList){
+        mEventDetailsArrayList = eventDetailsArrayList;
+    }
+
+    public ArrayList<EventDetails> getMEventDetailsArrayList(){
+        return mEventDetailsArrayList;
     }
 
     private void showErrorMessage(){

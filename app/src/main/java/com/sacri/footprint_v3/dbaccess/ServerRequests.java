@@ -10,6 +10,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ import android.util.Log;
 
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
+import com.sacri.footprint_v3.callback.GetEventCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
 import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.callback.RegisterUserCallback;
@@ -50,6 +54,7 @@ public class ServerRequests {
     public static final String ADD_PLACE_URL = SERVER_ADDRESS + "/place.php";
     public static final String ADD_EVENT_URL = SERVER_ADDRESS + "/event.php";
     public static final String FETCH_PLACE_URL = SERVER_ADDRESS + "/fetch_places.php";
+    public static final String FETCH_EVENT_URL = SERVER_ADDRESS + "/fetch_events.php";
 
     private static final String HTTP_ERROR_MSG ="HTTP ERROR WHILE LOGGING IN";
 
@@ -404,8 +409,12 @@ public class ServerRequests {
             data.put("ev_title",eventDetails.getEventTitle());
             data.put("ev_description", eventDetails.getEventDescription());
             data.put("ev_repeat_weekly",eventDetails.getRepeatedWeekly().toString());
-            data.put("ev_start_date",eventDetails.getStartDate().toString());
-            data.put("ev_end_date",eventDetails.getEndDate().toString());
+            DateFormat startDateFormat = new SimpleDateFormat("dd MM yyyy");
+            String startDate = startDateFormat.format(eventDetails.getStartDate());
+            data.put("ev_start_date",startDate);
+            DateFormat endDateFormat = new SimpleDateFormat("dd MM yyyy");
+            String endDate = endDateFormat.format(eventDetails.getEndDate());
+            data.put("ev_end_date",endDate);
             data.put("ev_start_time_hour", eventDetails.getStartTimeHour().toString());
             data.put("ev_start_time_minute", eventDetails.getStartTimeMinutes().toString());
             data.put("ev_end_time_hour", eventDetails.getEndTimeHour().toString());
@@ -436,6 +445,89 @@ public class ServerRequests {
     }
 
     ////////////////////////////////ADD EVENT ENDS///////////////////////////////////////
+
+    ////////////////////////////////FETCH PLACES STARTS///////////////////////////////////////
+
+    public void fetchEventDataInBackground(GetEventCallback getEventCallback){
+        progressDialog.show();
+        new FetchEventDataAsyncTask(getEventCallback).execute();
+    }
+
+    public class FetchEventDataAsyncTask extends AsyncTask<Void, Void, ArrayList<EventDetails>> {
+
+        GetEventCallback getEventCallback;
+
+        FetchEventDataAsyncTask(GetEventCallback getEventCallback) {
+            this.getEventCallback = getEventCallback;
+        }
+
+        @Override
+        protected ArrayList<EventDetails> doInBackground(Void... params) {
+            Log.i(FOOTPRINT_LOGGER, "doInBackground begins");
+            HashMap<String,String> data = new HashMap<>();
+            data.put("location", "New Delhi");
+            ArrayList<EventDetails> eventDetailsArrayList = new ArrayList<>();
+            try {
+                String result = sendPostRequest(FETCH_EVENT_URL, data);
+                Log.i(FOOTPRINT_LOGGER, "Result : " + result);
+                if(result.length()==154){
+                    eventDetailsArrayList = null;
+                    Log.i(FOOTPRINT_LOGGER, "JSON Object is Null : ");
+                }else{
+                    JSONArray jsonArray = new JSONArray(result);
+                    for(int i=0; i<jsonArray.length();i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String ev_title = jsonObject.getString("ev_title");
+                        String ev_description = jsonObject.getString("ev_description");
+                        String ev_repeat_weekly = jsonObject.getString("ev_repeat_weekly");
+                        String ev_start_date = jsonObject.getString("ev_start_date");
+                        DateFormat startDateFormat = new SimpleDateFormat("dd MM yyyy");
+                        Date startDate = startDateFormat.parse(ev_start_date);
+                        String ev_end_date = jsonObject.getString("ev_end_date");
+                        DateFormat endDateFormat = new SimpleDateFormat("dd MM yyyy");
+                        Date endDate = endDateFormat.parse(ev_end_date);
+                        String ev_start_time_hour = jsonObject.getString("ev_start_time_hour");
+                        String ev_start_time_minute = jsonObject.getString("ev_start_time_minute");
+                        String ev_end_time_hour = jsonObject.getString("ev_end_time_hour");
+                        String ev_end_time_minute = jsonObject.getString("ev_end_time_minute");
+                        String loc_longitude = jsonObject.getString("loc_longitude");
+                        String loc_latitude = jsonObject.getString("loc_latitude");
+                        String ev_address = jsonObject.getString("ev_address");
+                        EventDetails eventDetails = new EventDetails(
+                                ev_title,
+                                ev_description,
+                                Boolean.parseBoolean(ev_repeat_weekly),
+                                startDate,
+                                endDate,
+                                Integer.parseInt(ev_start_time_hour),
+                                Integer.parseInt(ev_start_time_minute),
+                                Integer.parseInt(ev_end_time_hour),
+                                Integer.parseInt(ev_end_time_minute),
+                                Double.parseDouble(loc_longitude),
+                                Double.parseDouble(loc_latitude),
+                                ev_address);
+                        eventDetailsArrayList.add(eventDetails);
+                        Log.i(FOOTPRINT_LOGGER, "eventDetails : " + eventDetails.toString());
+                    }
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            if(eventDetailsArrayList==null){
+                Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is Null : ");
+            }
+            return eventDetailsArrayList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<EventDetails> eventDetailsArrayList) {
+            progressDialog.dismiss();
+            getEventCallback.done(eventDetailsArrayList);
+            super.onPostExecute(eventDetailsArrayList);
+        }
+    }
+
+    ////////////////////////////////FETCH EVENTS ENDS///////////////////////////////////////
 
 
 //    public String getStringImage(Bitmap bmp){

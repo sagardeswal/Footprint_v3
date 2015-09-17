@@ -111,7 +111,7 @@ public class DisplayOnMapFragment extends Fragment {
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
         try {
-            ArrayList<PlaceDetails> placeDetailsArrayList = ((FeedActivity) getActivity()).getPlaceDetailsArrayList();
+            ArrayList<PlaceDetails> placeDetailsArrayList = ((FeedActivity) getActivity()).getMPlaceDetailsArrayList();
             if (placeDetailsArrayList == null) {
                 Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
                 showErrorMessage();
