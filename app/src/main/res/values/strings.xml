@@ -25,8 +25,8 @@
     <string-array name="category_array">
         <item>Food</item>
         <item>Outdoor Activity</item>
-        <item>Sports</item>
-        <item>Educational</item>
+        <item>Shopping</item>
+        <item>Religious</item>
         <item>Tourist Spot</item>
         <item>Cultural</item>
         <item>Night Life</item>
@@ -44,5 +44,10 @@
     <string name="change_password_button_text">Change Password</string>
     <string name="title_activity_spot_place">Map</string>
     <string name="map_button_text">Map</string>
+    <string name="locate_button_text">Locate</string>
+    <string name="repeat_weekly_switch_text">Repeat Weekly</string>
+    <string name="add_event_button_text">Add Event</string>
+    <string name="feed_button_text">Feed</string>
+    <string name="event_date_label_text">Event Date</string>
 
 </resources>

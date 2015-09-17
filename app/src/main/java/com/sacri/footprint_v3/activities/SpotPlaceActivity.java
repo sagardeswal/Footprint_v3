@@ -1,5 +1,7 @@
 package com.sacri.footprint_v3.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -63,6 +65,10 @@ public class SpotPlaceActivity extends FragmentActivity implements OnMapReadyCal
         // updates. Gets the best and most recent location currently available, which may be null
         // in rare cases when a location is not available.
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Intent location = new Intent();
+        location.putExtra("longitude", mLastLocation.getLongitude());
+        location.putExtra("latitude", mLastLocation.getLatitude());
+        setResult(Activity.RESULT_OK,location);
         Log.i(FOOTPRINT_LOGGER, "mLastLocation" + mLastLocation.toString());
         LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         map.addMarker(new MarkerOptions().position(latLng).title("My Location"));

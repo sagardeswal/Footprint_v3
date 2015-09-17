@@ -3,11 +3,13 @@ package com.sacri.footprint_v3.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.location.Location;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -17,6 +19,7 @@ import com.google.android.gms.location.LocationServices;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.fragments.AddPlaceFragment;
+import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 
 public class AddPlaceActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -43,14 +46,47 @@ public class AddPlaceActivity extends AppCompatActivity implements
         Log.i(FOOTPRINT_LOGGER, "mGoogleApiClient is connected = " + mGoogleApiClient.isConnected());
         newPlace = new PlaceDetails();
 
-        FragmentManager manager = getFragmentManager();
-        Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.fragmentContainer) != null) {
 
-        if (fragment == null) {
-            fragment = new AddPlaceFragment();
-            manager.beginTransaction().add(R.id.fragmentContainer, fragment)
-                    .commit();
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            FragmentManager manager = getFragmentManager();
+            Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
+
+            if (fragment == null) {
+                fragment = new AddPlaceFragment();
+                manager.beginTransaction().add(R.id.fragmentContainer, fragment)
+                        .commit();
+            }
         }
+    }
+
+    public void replaceAddPlaceFragmentWithMapFragment(){
+        // Create a new Fragment to be placed in the activity layout
+        DisplayOnMapFragment displayOnMapFragment = new DisplayOnMapFragment();
+
+        Bundle currentLocation = new Bundle();
+        currentLocation.putDouble("latitude", mLastLocation.getLatitude());
+        currentLocation.putDouble("longitude", mLastLocation.getLongitude());
+        displayOnMapFragment.setArguments(currentLocation);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragmentContainer, displayOnMapFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+
     }
 
     /**

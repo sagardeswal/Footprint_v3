@@ -1,5 +1,6 @@
 package com.sacri.footprint_v3.activities;
 
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,7 +8,10 @@ import android.view.MenuItem;
 
 import com.sacri.footprint_v3.R;
 
+
 public class AddPostActivity extends AppCompatActivity {
+
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,5 +45,13 @@ public class AddPostActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
         super.onBackPressed();
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

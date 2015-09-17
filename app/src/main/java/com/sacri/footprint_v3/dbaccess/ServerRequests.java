@@ -21,10 +21,12 @@ import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
 
+import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
 import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.callback.RegisterUserCallback;
+import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.entity.UserDetails;
 import org.json.JSONArray;
@@ -46,6 +48,7 @@ public class ServerRequests {
     public static final String LOGIN_URL = SERVER_ADDRESS + "/login.php";
     public static final String REGISTER_URL = SERVER_ADDRESS + "/register.php";
     public static final String ADD_PLACE_URL = SERVER_ADDRESS + "/place.php";
+    public static final String ADD_EVENT_URL = SERVER_ADDRESS + "/event.php";
     public static final String FETCH_PLACE_URL = SERVER_ADDRESS + "/fetch_places.php";
 
     private static final String HTTP_ERROR_MSG ="HTTP ERROR WHILE LOGGING IN";
@@ -375,6 +378,64 @@ public class ServerRequests {
     }
 
     ////////////////////////////////FETCH PLACES ENDS///////////////////////////////////////
+
+
+    ////////////////////////////////ADD EVENT STARTS///////////////////////////////////////
+    public void addEventDataInBackground(EventDetails eventDetails, AddEventCallback addEventCallback){
+        progressDialog.show();
+        new AddEventDataAsyncTask(eventDetails,addEventCallback).execute();
+    }
+
+    public class AddEventDataAsyncTask extends AsyncTask<Void, Void, String> {
+
+        EventDetails eventDetails;
+        AddEventCallback addEventCallback;
+
+        AddEventDataAsyncTask(EventDetails placeDetails, AddEventCallback addEventCallback) {
+            this.eventDetails = placeDetails;
+            this.addEventCallback = addEventCallback;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            Log.i(FOOTPRINT_LOGGER, "AddEventDataAsyncTask doInBackground begins");
+            String response = null;
+            HashMap<String,String> data = new HashMap<>();
+            data.put("ev_title",eventDetails.getEventTitle());
+            data.put("ev_description", eventDetails.getEventDescription());
+            data.put("ev_repeat_weekly",eventDetails.getRepeatedWeekly().toString());
+            data.put("ev_start_date",eventDetails.getStartDate().toString());
+            data.put("ev_end_date",eventDetails.getEndDate().toString());
+            data.put("ev_start_time_hour", eventDetails.getStartTimeHour().toString());
+            data.put("ev_start_time_minute", eventDetails.getStartTimeMinutes().toString());
+            data.put("ev_end_time_hour", eventDetails.getEndTimeHour().toString());
+            data.put("ev_end_time_minute", eventDetails.getEndTimeMinutes().toString());
+            data.put("ev_longitude", eventDetails.getLongitude().toString());
+            data.put("ev_latitude", eventDetails.getLatitude().toString());
+            data.put("ev_address", eventDetails.getAddress());
+
+            Log.i(FOOTPRINT_LOGGER, "eventDetails : " + eventDetails.toString());
+            try {
+                String result = sendPostRequest(ADD_EVENT_URL, data);
+                Log.i(FOOTPRINT_LOGGER, "Result : " + result);
+                response = result;
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            return response;
+
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            progressDialog.dismiss();
+            addEventCallback.done(response);
+            super.onPostExecute(response);
+        }
+    }
+
+    ////////////////////////////////ADD EVENT ENDS///////////////////////////////////////
 
 
 //    public String getStringImage(Bitmap bmp){

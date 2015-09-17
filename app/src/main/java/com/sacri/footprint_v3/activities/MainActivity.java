@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button bnLogout;
     private Button bnFeed;
     private Button bnMap;
+    private Button bnAddEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        bnAddEvent = (Button) findViewById(R.id.bnAddEvent);
+        bnAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,AddEventActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         bnAddPlace = (Button) findViewById(R.id.bnAddPlace);
         //hide app place button

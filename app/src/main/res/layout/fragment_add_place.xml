@@ -69,16 +69,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/etLocation" />
 
-        <ImageView
-            android:id="@+id/ivPreview"
+        <Button
+            android:id="@+id/bnLocate"
             android:layout_width="match_parent"
-            android:layout_height="384dp" />
-
-    <ImageButton
-        android:id="@+id/ibnTakePic"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_photo" />
+            android:layout_height="wrap_content"
+            android:text="@string/locate_button_text" />
 
     <Button
         android:id="@+id/bnSave"
@@ -91,6 +86,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/cancel_button_text" />
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="match_parent"
+            android:layout_height="384dp" />
+
+        <ImageButton
+            android:id="@+id/ibnTakePic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_photo" />
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -20,17 +20,13 @@
             android:layout_height="wrap_content"
             android:name="com.sacri.footprint_v3.fragments.MainMenuFragment"
             android:id="@+id/main_menu_fragment"
-            tools:layout="@layout/fragment_main_menu"
-            android:layout_above="@+id/bnLogout"
-            android:layout_centerHorizontal="true" />
+            tools:layout="@layout/fragment_main_menu" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_place_button_text"
             android:id="@+id/bnAddPlace"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal" />
 
         <Button
@@ -38,14 +34,12 @@
             android:layout_height="wrap_content"
             android:text="@string/logout_button_text"
             android:id="@+id/bnLogout"
-            android:layout_below="@+id/bnAddPlace"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feed"
+            android:text="@string/feed_button_text"
             android:id="@+id/bnFeed"
             android:layout_gravity="center_horizontal" />
 
@@ -54,6 +48,13 @@
             android:layout_height="wrap_content"
             android:text="@string/map_button_text"
             android:id="@+id/bnMap"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_event_button_text"
+            android:id="@+id/bnAddEvent"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
