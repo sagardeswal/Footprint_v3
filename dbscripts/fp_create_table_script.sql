@@ -34,3 +34,10 @@ CREATE TABLE  `a6596261_footp`.`fp_pl_images` (
 `img_blob` LONGBLOB NOT NULL ,
 PRIMARY KEY (  `img_id` )
 ) ENGINE = MYISAM
+
+CREATE TABLE  `a6596261_footp`.`pl_location_details` (
+`loc_id` INT( 2 ) NOT NULL AUTO_INCREMENT ,
+`loc_longitude` DOUBLE NOT NULL ,
+`loc_latitude` DOUBLE NOT NULL ,
+PRIMARY KEY (  `loc_id` )
+) ENGINE = MYISAM

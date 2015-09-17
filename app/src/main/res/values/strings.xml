@@ -42,5 +42,7 @@
     <string name="title_activity_app_settings">AppSettingsActivity</string>
     <string name="name_label_text">Name</string>
     <string name="change_password_button_text">Change Password</string>
+    <string name="title_activity_spot_place">Map</string>
+    <string name="map_button_text">Map</string>
 
 </resources>

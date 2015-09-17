@@ -1,7 +1,5 @@
 package com.sacri.footprint_v3.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.utils.UserLocalStore;
 
@@ -24,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private Button bnAddPlace;
     private Button bnLogout;
     private Button bnFeed;
+    private Button bnMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +38,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        bnMap = (Button) findViewById(R.id.bnMap);
+        bnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,SpotPlaceActivity.class);
+                startActivity(intent);
+            }
+        });
+
         bnAddPlace = (Button) findViewById(R.id.bnAddPlace);
         //hide app place button
         bnAddPlace.setVisibility(View.INVISIBLE);

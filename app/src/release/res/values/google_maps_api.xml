@@ -1,0 +1,18 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=50:CA:41:CF:9E:AF:1E:3B:F4:B0:1D:B0:1C:1C:60:71:3D:76:E8:39%3Bcom.sacri.footprint_v3.activities
+
+    You can also add your credentials to an existing key, using this line:
+    50:CA:41:CF:9E:AF:1E:3B:F4:B0:1D:B0:1C:1C:60:71:3D:76:E8:39;com.sacri.footprint_v3.activities
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        YOUR_KEY_HERE
+    </string>
+</resources>

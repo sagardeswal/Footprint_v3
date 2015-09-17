@@ -12,19 +12,39 @@ public class PlaceDetails {
     private Integer placeID;
     private String title;
     private String description;
-    private String location;
+    private Integer locID;
     private String category;
     private Character isActive;
     private File photoFile;
+    private Double longitude;
+    private Double latitude;
 
     public PlaceDetails() {
     }
 
-    public PlaceDetails(String title, String description, String location, String category) {
+    public PlaceDetails(String title, String description, Integer locID, String category, Double longitude, Double latitude) {
         this.title = title;
         this.description = description;
-        this.location = location;
+        this.locID = locID;
         this.category = category;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public Character getIsActive() {
@@ -59,12 +79,12 @@ public class PlaceDetails {
         this.description = description;
     }
 
-    public String getLocation() {
-        return location;
+    public Integer getLocID() {
+        return locID;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocID(Integer locID) {
+        this.locID = locID;
     }
 
     public File getPhotoFile() {
@@ -90,9 +110,11 @@ public class PlaceDetails {
                 ", placeID=" + placeID +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", location='" + location + '\'' +
+                ", locID=" + locID +
                 ", isActive=" + isActive +
                 ", photoFile=" + photoFile +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
                 '}';
     }
 }

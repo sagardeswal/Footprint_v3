@@ -13,10 +13,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.callback.GetPlaceCallback;
-import com.sacri.footprint_v3.dbaccess.ServerRequests;
+import com.sacri.footprint_v3.activities.FeedActivity;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.utils.FeedPlaceAdaptor;
+
 import java.util.ArrayList;
 
 public class FeedPlaceFragment extends Fragment {
@@ -35,17 +35,10 @@ public class FeedPlaceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        String[] places = {"Qutab Minar", "India Gate", "Lotus Temple", "Connaught Place", "Chandni Chawk", "Hauz Khas Village", "Akshardham"};
-        String location ="New Delhi";
-
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_place_feed, container, false);
 
-
-        ServerRequests serverRequests = new ServerRequests(getActivity());
-        serverRequests.fetchPlaceDataInBackground(location, new GetPlaceCallback() {
-            @Override
-            public void done(ArrayList<PlaceDetails> placeDetailsArrayList) {
+        ArrayList<PlaceDetails> placeDetailsArrayList =((FeedActivity) getActivity()).getPlaceDetailsArrayList();
 
                 if (placeDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
@@ -55,8 +48,7 @@ public class FeedPlaceFragment extends Fragment {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
                     setListAdaptor(placeDetailsArrayList);
                 }
-            }
-        });
+
         return v;
     }
 
@@ -83,5 +75,4 @@ public class FeedPlaceFragment extends Fragment {
         dialogBuilder.setPositiveButton("Ok", null);
         dialogBuilder.show();
     }
-
 }

@@ -88,8 +88,8 @@ public class ServerRequests {
             url = new URL(requestURL);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setReadTimeout(CONNECTION_TIMEOUT);
-//            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+            conn.setReadTimeout(CONNECTION_TIMEOUT);
+            conn.setConnectTimeout(CONNECTION_TIMEOUT);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -276,11 +276,12 @@ public class ServerRequests {
             HashMap<String,String> data = new HashMap<>();
             data.put("pl_title",placeDetails.getTitle());
             data.put("pl_description", placeDetails.getDescription());
-            data.put("pl_location",placeDetails.getLocation());
             data.put("pl_category",placeDetails.getCategory());
-            String filePath = placeDetails.getPhotoFile().getPath();
-            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-            String imageString = getStringImage(bitmap);
+            data.put("pl_longitude",placeDetails.getLongitude().toString());
+            data.put("pl_latitude",placeDetails.getLatitude().toString());
+//            String filePath = placeDetails.getPhotoFile().getPath();
+//            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+//            String imageString = getStringImage(bitmap);
 //            data.put("pl_image",imageString);
             Log.i(FOOTPRINT_LOGGER, "placeDetails : " + placeDetails.toString());
             try {
@@ -306,8 +307,6 @@ public class ServerRequests {
     ////////////////////////////////ADD PLACE ENDS///////////////////////////////////////
 
     ////////////////////////////////FETCH PLACES STARTS///////////////////////////////////////
-
-    ////////////////////////////////FETCH PLACES ENDS///////////////////////////////////////
 
     public void fetchPlaceDataInBackground(String location, GetPlaceCallback getPlaceCallback){
         progressDialog.show();
@@ -343,9 +342,17 @@ public class ServerRequests {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String title = jsonObject.getString("pl_title");
                         String description = jsonObject.getString("pl_description");
-                        String location = jsonObject.getString("pl_location");
+                        int locID = jsonObject.getInt("pl_loc_id");
                         String category = jsonObject.getString("pl_category");
-                        PlaceDetails placeDetails = new PlaceDetails(title, description, location, category);
+                        String longitude = jsonObject.getString("pl_loc_long");
+                        String latitude = jsonObject.getString("pl_loc_lat");
+                        PlaceDetails placeDetails = new PlaceDetails(
+                                title,
+                                description,
+                                locID,
+                                category,
+                                Double.parseDouble(longitude),
+                                Double.parseDouble(latitude));
                         placeDetailsArrayList.add(placeDetails);
                         Log.i(FOOTPRINT_LOGGER, "placeDetails : " + placeDetails.toString());
                     }
@@ -367,11 +374,14 @@ public class ServerRequests {
         }
     }
 
-    public String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
-    }
+    ////////////////////////////////FETCH PLACES ENDS///////////////////////////////////////
+
+
+//    public String getStringImage(Bitmap bmp){
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        byte[] imageBytes = baos.toByteArray();
+//        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//        return encodedImage;
+//    }
 }

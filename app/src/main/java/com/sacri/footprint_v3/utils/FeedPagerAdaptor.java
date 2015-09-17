@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 import com.sacri.footprint_v3.fragments.FeedPostFragment;
 import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 
@@ -24,6 +25,10 @@ public class FeedPagerAdaptor extends FragmentPagerAdapter {
             case 1:
 
                 return new FeedPlaceFragment();
+
+            case 2:
+
+                return new DisplayOnMapFragment();
             default:
                 return null;
         }
@@ -31,7 +36,7 @@ public class FeedPagerAdaptor extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override

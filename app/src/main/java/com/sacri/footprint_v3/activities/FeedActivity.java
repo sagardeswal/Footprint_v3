@@ -1,21 +1,46 @@
 package com.sacri.footprint_v3.activities;
 
+import android.app.AlertDialog;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.callback.GetPlaceCallback;
+import com.sacri.footprint_v3.dbaccess.ServerRequests;
+import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
 
-public class FeedActivity extends AppCompatActivity implements ActionBar.TabListener  {
+import java.util.ArrayList;
 
+public class FeedActivity extends AppCompatActivity implements ActionBar.TabListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+
+    private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private FeedPagerAdaptor mFeedPagerAdaptor;
     private ViewPager feedPager;
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected Location mLastLocation;
+    public static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +48,10 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
+        buildGoogleApiClient();
         final ActionBar actionBar = getSupportActionBar();
+
+        getPlacesInBackground();
 
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
@@ -58,6 +86,8 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                 case 0: pageTitle = "Feed";
                     break;
                 case 1: pageTitle = "Places";
+                    break;
+                case 2: pageTitle = "Map";
                     break;
                 default:pageTitle = "Home";
             }
@@ -110,5 +140,108 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(FOOTPRINT_LOGGER,"AddPlaceActivity onConnected()");
+        // Provides a simple way of getting a device's location and is well suited for
+        // applications that do not require a fine-grained location and that do not need location
+        // updates. Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Log.i(FOOTPRINT_LOGGER, "mLastLocation" + mLastLocation.toString());
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(FOOTPRINT_LOGGER, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(FOOTPRINT_LOGGER, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        Log.i(FOOTPRINT_LOGGER,"buildGoogleApiClient()");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.i(FOOTPRINT_LOGGER,"AddPlaceActivity onStart()");
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(FOOTPRINT_LOGGER, "AddPlaceActivity onStop()");
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+
+    public GoogleApiClient getmGoogleApiClient(){
+        Log.i(FOOTPRINT_LOGGER,"getmGoogleApiClient()");
+        return mGoogleApiClient;
+    }
+
+    public Location getmLastLocation(){
+        Log.i(FOOTPRINT_LOGGER,"getmLastLocation()");
+        return mLastLocation;
+    }
+
+    private void getPlacesInBackground(){
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.fetchPlaceDataInBackground("New Delhi", new GetPlaceCallback() {
+            @Override
+            public void done(ArrayList<PlaceDetails> placeDetailsArrayList) {
+
+                if (placeDetailsArrayList == null) {
+                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
+                    showErrorMessage();
+
+                } else {
+                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
+                    setMPlaceDetailsArrayList(placeDetailsArrayList);
+                }
+            }
+        });
+    }
+
+    public void setMPlaceDetailsArrayList(ArrayList<PlaceDetails> placeDetailsArrayList){
+        mPlaceDetailsArrayList = placeDetailsArrayList;
+    }
+
+    public ArrayList<PlaceDetails> getPlaceDetailsArrayList(){
+        return mPlaceDetailsArrayList;
+    }
+
+    private void showErrorMessage(){
+        Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("No Places Found");
+        dialogBuilder.setPositiveButton("Ok", null);
+        dialogBuilder.show();
     }
 }

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -25,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.AddPlaceActivity;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
@@ -39,17 +41,12 @@ public class AddPlaceFragment extends Fragment {
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private EditText etTitle;
     private EditText etDescription;
-    private EditText etLocation;
     private Spinner spCategory;
     private ImageButton ibnTakePic;
     private Button bnSave;
     private Button bnCancel;
     private ImageView ivPreview;
-
     private int PICK_IMAGE_REQUEST = 1;
-    private Bitmap bitmap;
-    private Uri filePath;
-
     private PlaceDetails newPlace;
 
     @Override
@@ -64,7 +61,6 @@ public class AddPlaceFragment extends Fragment {
 
         etTitle = (EditText) v.findViewById(R.id.etTitle);
         etDescription = (EditText) v.findViewById(R.id.etDescription);
-        etLocation = (EditText) v.findViewById(R.id.etLocation);
         spCategory = (Spinner) v.findViewById(R.id.spCategory);
         ibnTakePic = (ImageButton) v.findViewById(R.id.ibnTakePic);
         bnSave = (Button) v.findViewById(R.id.bnSave);
@@ -89,7 +85,6 @@ public class AddPlaceFragment extends Fragment {
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(etTitle.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(etDescription.getWindowToken(), 0);
-                imm.hideSoftInputFromWindow(etLocation.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(spCategory.getWindowToken(), 0);
                 startCamera();
             }
@@ -103,7 +98,13 @@ public class AddPlaceFragment extends Fragment {
                 newPlace.setTitle(etTitle.getText().toString());
                 newPlace.setDescription(etDescription.getText().toString());
                 newPlace.setCategory(spCategory.getSelectedItem().toString());
-                newPlace.setLocation(etLocation.getText().toString());
+                Location mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
+                if(mLastLocation==null){
+                    Log.i(FOOTPRINT_LOGGER, "mLastLocation is null");
+                }else{
+                    newPlace.setLatitude(mLastLocation.getLatitude());
+                    newPlace.setLongitude(mLastLocation.getLongitude());
+                }
                 storePlaceDetials();
             }
         });
