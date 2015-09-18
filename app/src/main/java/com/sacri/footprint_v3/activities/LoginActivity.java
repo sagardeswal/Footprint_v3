@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity implements
         mShouldResolve = false;
 
         // Show the signed-in UI
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, FeedActivity.class);
         startActivity(intent);
         finish();
     }
@@ -258,7 +258,7 @@ public class LoginActivity extends AppCompatActivity implements
         if(returnedUserDetails!=null) {
             Log.i(FOOTPRINT_LOGGER, "returnedUserDetails=" + returnedUserDetails.getUsername());
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, FeedActivity.class);
             startActivity(intent);
             finish();
         }

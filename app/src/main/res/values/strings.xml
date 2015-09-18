@@ -52,5 +52,8 @@
     <string name="end_date_label_text">End Date</string>
     <string name="start_time_label_text">Start Time</string>
     <string name="end_time_label_text">End Time</string>
+    <string name="add_event_menu_item_label_text">Add Event</string>
+    <string name="add_place_menu_item_lable_text">Add Place</string>
+    <string name="logout_menu_item_label_text">Logout</string>
 
 </resources>

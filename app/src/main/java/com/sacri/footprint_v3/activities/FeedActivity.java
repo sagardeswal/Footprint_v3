@@ -1,6 +1,7 @@
 package com.sacri.footprint_v3.activities;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -20,6 +21,7 @@ import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
+import com.sacri.footprint_v3.utils.UserLocalStore;
 
 import java.util.ArrayList;
 
@@ -119,13 +121,27 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        switch(id){
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.action_settings : return true;
+            case R.id.mnAddEvent:
+                Intent intentAddEvent = new Intent(FeedActivity.this,AddEventActivity.class);
+                startActivity(intentAddEvent);
+                return true;
+            case R.id.mnAddPlace:
+                Intent intentAddPlace = new Intent(FeedActivity.this,AddPlaceActivity.class);
+                startActivity(intentAddPlace);
+                return true;
+            case R.id.mnLogout:
+                UserLocalStore userLocalStore = new UserLocalStore(this);
+                userLocalStore.clearUserData();
+                userLocalStore.setUserLoggedIn(false);
+                finish();
+                Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+            default:return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -155,7 +171,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.i(FOOTPRINT_LOGGER,"AddPlaceActivity onConnected()");
+        Log.i(FOOTPRINT_LOGGER, "AddPlaceActivity onConnected()");
         // Provides a simple way of getting a device's location and is well suited for
         // applications that do not require a fine-grained location and that do not need location
         // updates. Gets the best and most recent location currently available, which may be null
