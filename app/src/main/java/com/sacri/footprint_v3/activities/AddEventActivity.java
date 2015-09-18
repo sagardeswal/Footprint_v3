@@ -38,9 +38,6 @@ public class AddEventActivity extends AppCompatActivity {
     private DatePicker dpEndDate;
     private TimePicker tpStartTime;
     private TimePicker tpEndTime;
-    private Button bnSave;
-    private Button bnCancel;
-    private Button bnLocate;
 
     private EventDetails eventDetails;
     private int PLACE_PICKER_REQUEST = 1;
@@ -67,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
         }
         tpStartTime = (TimePicker) findViewById(R.id.tpStartTime);
         tpEndTime = (TimePicker) findViewById(R.id.tpEndTime);
-        bnLocate = (Button) findViewById(R.id.bnLocate);
+        Button bnLocate = (Button) findViewById(R.id.bnLocate);
         bnLocate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,15 +79,13 @@ public class AddEventActivity extends AppCompatActivity {
                     // identified by a request code.
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
 
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
                 }
 
             }
         });
-        bnSave = (Button) findViewById(R.id.bnSave);
+        Button bnSave = (Button) findViewById(R.id.bnSave);
         bnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,7 +94,7 @@ public class AddEventActivity extends AppCompatActivity {
                 eventDetails.setEventDescription(etDescription.getText().toString());
                 eventDetails.setRepeatedWeekly(swRepeatWeekly.isChecked());
                 eventDetails.setStartDate(new Date(dpStartDate.getYear(), dpStartDate.getMonth(), dpStartDate.getDayOfMonth()));
-                if (eventDetails.getRepeatedWeekly() == true) {
+                if (eventDetails.getRepeatedWeekly()) {
                     eventDetails.setEndDate(eventDetails.getStartDate());
                 } else {
                     eventDetails.setEndDate(new Date(dpEndDate.getYear(), dpEndDate.getMonth(), dpEndDate.getDayOfMonth()));
@@ -113,7 +108,7 @@ public class AddEventActivity extends AppCompatActivity {
                 storeEventDataInBackground();
             }
         });
-        bnCancel = (Button) findViewById(R.id.bnCancel);
+        Button bnCancel = (Button) findViewById(R.id.bnCancel);
         bnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,10 +135,10 @@ public class AddEventActivity extends AppCompatActivity {
             LatLng latLng = place.getLatLng();
             eventDetails.setLongitude(latLng.longitude);
             eventDetails.setLatitude(latLng.latitude);
-            String attributions = PlacePicker.getAttributions(data);
-            if (attributions == null) {
-                attributions = "";
-            }
+//            String attributions = PlacePicker.getAttributions(data);
+//            if (attributions == null) {
+//                attributions = "";
+//            }
             etLocation.setText(name + "\n" + address);
             eventDetails.setAddress(name + "\n" + address);
         }

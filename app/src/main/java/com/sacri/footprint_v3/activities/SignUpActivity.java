@@ -24,7 +24,6 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText etReEnterPassword;
     private EditText etEmail;
     private EditText etMobile;
-    private Button bnSignUp;
 
     private UserDetails newUser;
 
@@ -43,7 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         etReEnterPassword = (EditText) findViewById(R.id.etReEnterPassword);
         etEmail = (EditText) findViewById(R.id.etEmail);
         etMobile = (EditText) findViewById(R.id.etMobile);
-        bnSignUp = (Button) findViewById(R.id.bnSignUp);
+        Button bnSignUp = (Button) findViewById(R.id.bnSignUp);
 
         //Create new instance of UserDetails
         newUser = new UserDetails();
@@ -51,22 +50,50 @@ public class SignUpActivity extends AppCompatActivity {
         bnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int missing[] = {0, 0, 0, 0, 0};
+                int passwordsMatch = 0;
                 //Set values in newUser
-                newUser.setFullname(etFullName.getText().toString());
-                newUser.setUsername(etUsername.getText().toString());
-                newUser.setEmail(etEmail.getText().toString());
-                newUser.setMobile(etMobile.getText().toString());
-
-                //Check if Password fields match
-                if(etPassword.getText().toString().equals(etReEnterPassword.getText().toString())){
-                    newUser.setPaswordhashcode(etPassword.getText().toString());
-                    storeUserDetails();
-//                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
-//                    startActivity(intent);
+                if (etFullName.getText() != null)
+                    newUser.setFullname(etFullName.getText().toString());
+                else {
+                    missing[0] = 1;
+                    Toast.makeText(SignUpActivity.this, "Full name cannot be empty.", Toast.LENGTH_SHORT).show();
                 }
-                else{
-                    Toast.makeText(SignUpActivity.this, "Passwords don't match", Toast.LENGTH_SHORT).show();
-                    etReEnterPassword.setText(NULL_STRING);
+
+                if (etUsername.getText() != null)
+                    newUser.setUsername(etUsername.getText().toString());
+                else {
+                    missing[1] = 1;
+                    Toast.makeText(SignUpActivity.this, "Username cannot be empty.", Toast.LENGTH_SHORT).show();
+                }
+                if (etEmail.getText() != null)
+                    newUser.setEmail(etEmail.getText().toString());
+                else {
+                    missing[2] = 1;
+                    Toast.makeText(SignUpActivity.this, "Email cannot be empty.", Toast.LENGTH_SHORT).show();
+                }
+                if (etMobile.getText() != null)
+                    newUser.setMobile(etMobile.getText().toString());
+                else {
+                    missing[3] = 1;
+                    Toast.makeText(SignUpActivity.this, "Mobile cannot be empty.", Toast.LENGTH_SHORT).show();
+                }
+                if (etPassword.getText() != null && etReEnterPassword.getText() != null) {
+                    //Check if Password fields match
+                    if (etPassword.getText().toString().equals(etReEnterPassword.getText().toString())) {
+                        newUser.setPaswordhashcode(etPassword.getText().toString());
+                        passwordsMatch = 1;
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Passwords don't match", Toast.LENGTH_SHORT).show();
+                        etPassword.setText(NULL_STRING);
+                        etReEnterPassword.setText(NULL_STRING);
+                    }
+                } else {
+                    missing[4] = 1;
+                    Toast.makeText(SignUpActivity.this, "Please choose a password.", Toast.LENGTH_SHORT).show();
+                }
+                if (missing[0] != 1 && missing[1] != 1 && missing[2] != 1 && missing[3] != 1 && missing[4] != 1 && passwordsMatch == 1) {
+                    storeUserDetails();
                 }
             }
         });

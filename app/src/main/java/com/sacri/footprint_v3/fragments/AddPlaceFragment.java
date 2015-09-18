@@ -1,6 +1,7 @@
 package com.sacri.footprint_v3.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -8,11 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.Html;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,21 +23,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.AddPlaceActivity;
-import com.sacri.footprint_v3.activities.MainActivity;
-import com.sacri.footprint_v3.activities.SpotPlaceActivity;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 
@@ -50,13 +43,9 @@ public class AddPlaceFragment extends Fragment {
     private EditText etDescription;
     private EditText etLocation;
     private Spinner spCategory;
-    private ImageButton ibnTakePic;
-    private Button bnSave;
-    private Button bnCancel;
-    private Button bnLocate;
     private ImageView ivPreview;
-    private int PICK_IMAGE_REQUEST = 1;
     private PlaceDetails newPlace;
+    private LatLng pickedLocation;
 
     private int PLACE_PICKER_REQUEST = 1;
 
@@ -75,10 +64,10 @@ public class AddPlaceFragment extends Fragment {
         etLocation = (EditText) v.findViewById(R.id.etLocation);
         spCategory = (Spinner) v.findViewById(R.id.spCategory);
 
-        ibnTakePic = (ImageButton) v.findViewById(R.id.ibnTakePic);
-        bnLocate = (Button) v.findViewById(R.id.bnLocate);
-        bnSave = (Button) v.findViewById(R.id.bnSave);
-        bnCancel = (Button) v.findViewById(R.id.bnCancel);
+        ImageButton ibnTakePic = (ImageButton) v.findViewById(R.id.ibnTakePic);
+        Button bnLocate = (Button) v.findViewById(R.id.bnLocate);
+        Button bnSave = (Button) v.findViewById(R.id.bnSave);
+        Button bnCancel = (Button) v.findViewById(R.id.bnCancel);
         ivPreview = (ImageView) v.findViewById(R.id.ivPreview);
 
         //Disable Button if user has no camera
@@ -109,8 +98,6 @@ public class AddPlaceFragment extends Fragment {
             public void onClick(View v) {
                 Log.i(FOOTPRINT_LOGGER, "bnLocate clicked");
 
-
-//                ((AddPlaceActivity)getActivity()).replaceAddPlaceFragmentWithMapFragment();
                 // Construct an intent for the place picker
                 try {
                     PlacePicker.IntentBuilder intentBuilder =
@@ -120,9 +107,7 @@ public class AddPlaceFragment extends Fragment {
                     // identified by a request code.
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
 
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
                 }
 
@@ -133,18 +118,40 @@ public class AddPlaceFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i(FOOTPRINT_LOGGER, "bnSave clicked");
-                newPlace = ((AddPlaceActivity)getActivity()).getCurrentPlaceDetails();
-                newPlace.setTitle(etTitle.getText().toString());
-                newPlace.setDescription(etDescription.getText().toString());
-                newPlace.setCategory(spCategory.getSelectedItem().toString());
-                Location mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
-                if(mLastLocation==null){
-                    Log.i(FOOTPRINT_LOGGER, "mLastLocation is null");
-                }else{
+                int missing[] = {0, 0, 0};
+                newPlace = ((AddPlaceActivity) getActivity()).getCurrentPlaceDetails();
+                if (etTitle.getText() != null)
+                    newPlace.setTitle(etTitle.getText().toString());
+                else {
+                    missing[0] = 1;
+                    Toast.makeText(getActivity(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+                if (etDescription.getText() != null)
+                    newPlace.setDescription(etDescription.getText().toString());
+                else {
+                    missing[1] = 1;
+                    Toast.makeText(getActivity(), "Description cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+                if (spCategory.getSelectedItem() != null)
+                    newPlace.setCategory(spCategory.getSelectedItem().toString());
+                else {
+                    missing[2] = 1;
+                    Toast.makeText(getActivity(), "Category cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+
+                if (pickedLocation == null) {
+                    Log.i(FOOTPRINT_LOGGER, "pickedLocation is null");
+                    showInfoMessage();
+                    Location mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
                     newPlace.setLatitude(mLastLocation.getLatitude());
                     newPlace.setLongitude(mLastLocation.getLongitude());
+                } else {
+                    newPlace.setLatitude(pickedLocation.latitude);
+                    newPlace.setLongitude(pickedLocation.longitude);
                 }
-                storePlaceDetials();
+                if(missing[0]!=1 && missing[1]!=1 && missing[2]!=1){
+                    storePlaceDetials();
+                }
             }
         });
 
@@ -152,7 +159,7 @@ public class AddPlaceFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                Log.i(FOOTPRINT_LOGGER,"bnCancel clicked");
+                Log.i(FOOTPRINT_LOGGER, "bnCancel clicked");
                 getActivity().setResult(Activity.RESULT_CANCELED);
                 getActivity().finish();
             }
@@ -176,7 +183,7 @@ public class AddPlaceFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode,
                                     int resultCode, Intent data) {
-        Log.i(FOOTPRINT_LOGGER,"onActivityResult()");
+        Log.i(FOOTPRINT_LOGGER, "onActivityResult()");
 
         if (requestCode == PLACE_PICKER_REQUEST
                 && resultCode == Activity.RESULT_OK) {
@@ -186,14 +193,13 @@ public class AddPlaceFragment extends Fragment {
 
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
-            String attributions = PlacePicker.getAttributions(data);
-            if (attributions == null) {
-                attributions = "";
-            }
+            pickedLocation = place.getLatLng();
+//            String attributions = PlacePicker.getAttributions(data);
+//            if (attributions == null) {
+//                attributions = "";
+//            }
 
             etLocation.setText(name + "\n" + address);
-
-
 
         }
     }
@@ -202,13 +208,7 @@ public class AddPlaceFragment extends Fragment {
 
     private boolean hasCamera(Context context){
         Log.i(FOOTPRINT_LOGGER, "hasCamera()");
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
     public void startCamera() {
@@ -241,20 +241,28 @@ public class AddPlaceFragment extends Fragment {
 
     /////////////////////////////////IMAGE HANDLING METHODS START///////////////////////////////////////////
 
-    private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
+//    private void showFileChooser() {
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        int PICK_IMAGE_REQUEST = 1;
+//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+//    }
 
-    public String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
-    }
-
+//    public String getStringImage(Bitmap bmp){
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        byte[] imageBytes = baos.toByteArray();
+//        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//        return encodedImage;
+//    }
     /////////////////////////////////IMAGE HANDLING METHODS END///////////////////////////////////////////
+
+    private void showInfoMessage(){
+        Log.i(FOOTPRINT_LOGGER, "showInfoMessage()");
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        dialogBuilder.setMessage("No location picked. Using your current location.");
+        dialogBuilder.setPositiveButton("Ok", null);
+        dialogBuilder.show();
+    }
 }

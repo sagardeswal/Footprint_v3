@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,11 +19,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.AddPlaceActivity;
 import com.sacri.footprint_v3.activities.FeedActivity;
+import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class DisplayOnMapFragment extends Fragment {
 
@@ -58,12 +55,10 @@ public class DisplayOnMapFragment extends Fragment {
         googleMap = mMapView.getMap();
         googleMap.setMyLocationEnabled(true);
         Location mLastLocation = null;
-        // adding marker
         LatLng latLng;
         try {
             mLastLocation = ((FeedActivity) getActivity()).getmLastLocation();
         }catch(Exception e){
-            mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
         }
         if(mLastLocation==null){
             Log.i(FOOTPRINT_LOGGER, "mLastLocation is null");
@@ -71,45 +66,6 @@ public class DisplayOnMapFragment extends Fragment {
         }else{
             latLng = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
         }
-
-        // create marker
-        MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())).title("My Location");
-
-        // Changing marker icon
-        marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                try {
-                    //set the properties for button
-                    FrameLayout mapViewLayout = (FrameLayout) getActivity().findViewById(R.id.mapViewLayout);
-                    Button bnDone = new Button(getActivity());
-                    bnDone.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-                    bnDone.setText("Done");
-                    //add button to the layout
-                    mapViewLayout.addView(bnDone);
-
-                    bnDone.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            getFragmentManager().popBackStackImmediate();
-                        }
-                    });
-                }catch(Exception e){
-                    //do nothing
-                }
-            }
-        });
-
-        // add marker
-        googleMap.addMarker(marker);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
         try {
             ArrayList<PlaceDetails> placeDetailsArrayList = ((FeedActivity) getActivity()).getMPlaceDetailsArrayList();
             if (placeDetailsArrayList == null) {
@@ -117,20 +73,50 @@ public class DisplayOnMapFragment extends Fragment {
                 showErrorMessage();
             } else {
                 Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
-                drawMarkersOnMap(placeDetailsArrayList);
+                drawPlaceMarkersOnMap(placeDetailsArrayList);
             }
         }catch(Exception e){
             //do nothing
         }
 
+        try{
+            ArrayList<EventDetails> eventDetailsArrayList = ((FeedActivity) getActivity()).getMEventDetailsArrayList();
+            if(eventDetailsArrayList==null) {
+                Log.i(FOOTPRINT_LOGGER,"eventDetailsArrayList is null");
+            }
+            else{
+                Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.toString());
+                drawEventMarkersOnMap(eventDetailsArrayList);
+            }
+        }catch(Exception e){
+            //do nothing
+        }
+
+        drawCurrentLocationMarker(latLng);
+
         // Perform any camera updates here
         return v;
     }
 
-    private void drawMarkersOnMap(ArrayList<PlaceDetails> placeDetailsArrayList) {
-        Iterator<PlaceDetails> placeDetailsIterator = placeDetailsArrayList.iterator();
-        while (placeDetailsIterator.hasNext()){
-            PlaceDetails placeDetails = placeDetailsIterator.next();
+    private void drawCurrentLocationMarker(LatLng latLng){
+        // create marker
+        MarkerOptions marker = new MarkerOptions().position(
+                new LatLng(latLng.latitude, latLng.longitude)).title("My Location");
+
+        // Changing marker icon
+        marker.icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+        googleMap.addMarker(marker);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng).zoom(12).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+    }
+
+    private void drawPlaceMarkersOnMap(ArrayList<PlaceDetails> placeDetailsArrayList) {
+        for (PlaceDetails placeDetails : placeDetailsArrayList) {
             // create marker
             MarkerOptions marker = new MarkerOptions().position(
                     new LatLng(placeDetails.getLatitude(), placeDetails.getLongitude())).title(placeDetails.getTitle());
@@ -138,6 +124,21 @@ public class DisplayOnMapFragment extends Fragment {
             // Changing marker icon
             marker.icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+
+            // add marker
+            googleMap.addMarker(marker);
+        }
+    }
+
+    private void drawEventMarkersOnMap(ArrayList<EventDetails> eventDetailsArrayList) {
+        for (EventDetails eventDetails : eventDetailsArrayList) {
+            // create marker
+            MarkerOptions marker = new MarkerOptions().position(
+                    new LatLng(eventDetails.getLatitude(), eventDetails.getLongitude())).title(eventDetails.getEventTitle());
+
+            // Changing marker icon
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
             // add marker
             googleMap.addMarker(marker);

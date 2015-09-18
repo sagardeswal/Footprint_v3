@@ -31,25 +31,16 @@ public class LoginActivity extends AppCompatActivity implements
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
-
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
-
     /* Is there a ConnectionResult resolution in progress? */
     private boolean mIsResolving = false;
-
     /* Should we automatically resolve ConnectionResults when possible? */
     private boolean mShouldResolve = false;
-
     private UserLocalStore userLocalStore;
-
     private EditText etUsername;
     private EditText etPassword;
-    private Button bnLogin;
-    private Button bnSignUp;
     private TextView mStatusTextView;
-//    private UserDetails userDetails;
-
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 
 
@@ -71,8 +62,8 @@ public class LoginActivity extends AppCompatActivity implements
         //Get reference to widgets
         etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
-        bnLogin = (Button) findViewById(R.id.bnLogin);
-        bnSignUp = (Button) findViewById(R.id.bnSignUp);
+        Button bnLogin = (Button) findViewById(R.id.bnLogin);
+        Button bnSignUp = (Button) findViewById(R.id.bnSignUp);
         mStatusTextView = (TextView) findViewById(R.id.mStatusTextView);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -81,7 +72,15 @@ public class LoginActivity extends AppCompatActivity implements
         bnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginUser();
+                String username = "";
+                String password = "";
+                if(etUsername.getText()!=null){
+                    username=etUsername.getText().toString();
+                    if(etPassword.getText()!=null){
+                        password=etPassword.getText().toString();
+                    }
+                }
+                loginUser(username,password);
             }
         });
 
@@ -116,9 +115,9 @@ public class LoginActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void loginUser(){
+    public void loginUser(String username, String password){
 
-        UserDetails userDetails = new UserDetails(etUsername.getText().toString(),etPassword.getText().toString());
+        UserDetails userDetails = new UserDetails(username,password);
         authenticate(userDetails);
     }
 
@@ -206,7 +205,9 @@ public class LoginActivity extends AppCompatActivity implements
         mShouldResolve = false;
 
         // Show the signed-in UI
-        loginUser();
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

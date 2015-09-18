@@ -28,8 +28,7 @@ public class CameraFragment extends Fragment {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 	private Camera camera;
-	private SurfaceView surfaceView;
-	private File photoFile;
+    private File photoFile;
 	private ImageButton photoButton;
 
 	@Override
@@ -51,7 +50,7 @@ public class CameraFragment extends Fragment {
 			}
 		}
 
-		surfaceView = (SurfaceView) v.findViewById(R.id.camera_surface_view);
+        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.camera_surface_view);
 		SurfaceHolder holder = surfaceView.getHolder();
 		holder.addCallback(new Callback() {
 

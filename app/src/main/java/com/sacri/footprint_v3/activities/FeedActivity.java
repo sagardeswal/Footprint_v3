@@ -10,13 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetEventCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
@@ -30,7 +26,6 @@ import java.util.ArrayList;
 public class FeedActivity extends AppCompatActivity implements ActionBar.TabListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
-    private FeedPagerAdaptor mFeedPagerAdaptor;
     private ViewPager feedPager;
     /**
      * Provides the entry point to Google Play services.
@@ -65,10 +60,11 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
+        assert actionBar != null;
         actionBar.setHomeButtonEnabled(false);
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
-        mFeedPagerAdaptor = new FeedPagerAdaptor(getSupportFragmentManager());
+        FeedPagerAdaptor mFeedPagerAdaptor = new FeedPagerAdaptor(getSupportFragmentManager());
         feedPager = (ViewPager) findViewById(R.id.pager);
         feedPager.setAdapter(mFeedPagerAdaptor);
 
@@ -210,12 +206,6 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
-    }
-
-
-    public GoogleApiClient getmGoogleApiClient(){
-        Log.i(FOOTPRINT_LOGGER, "getmGoogleApiClient()");
-        return mGoogleApiClient;
     }
 
     public Location getmLastLocation(){
