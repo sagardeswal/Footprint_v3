@@ -33,6 +33,7 @@ public class FeedPagerAdaptor extends FragmentPagerAdapter {
 
             case 3:
 
+//                return new FeedEventFragment();
                 return new DisplayOnMapFragment();
 
             default:

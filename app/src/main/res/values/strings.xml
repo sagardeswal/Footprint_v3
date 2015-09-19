@@ -55,5 +55,10 @@
     <string name="add_event_menu_item_label_text">Add Event</string>
     <string name="add_place_menu_item_lable_text">Add Place</string>
     <string name="logout_menu_item_label_text">Logout</string>
+    <string name="title_activity_view_event">Footprint Event</string>
+    <string name="get_directions_label_text">Get Directions</string>
+    <string name="check_in_button_text">Check In</string>
+    <string name="get_directions_button_text">Get Directions</string>
+    <string name="address_label_text">Address</string>
 
 </resources>

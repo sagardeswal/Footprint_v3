@@ -24,7 +24,8 @@ public class EventDetails {
     public EventDetails() {
     }
 
-    public EventDetails(String eventTitle, String eventDescription, Boolean repeatedWeekly, Date startDate, Date endDate, Integer startTimeHour, Integer startTimeMinutes, Integer endTimeHour, Integer endTimeMinutes, Double longitude, Double latitude, String address) {
+    public EventDetails(Integer eventID, String eventTitle, String eventDescription, Boolean repeatedWeekly, Date startDate, Date endDate, Integer startTimeHour, Integer startTimeMinutes, Integer endTimeHour, Integer endTimeMinutes, Double longitude, Double latitude, String address) {
+        this.eventID = eventID;
         this.address = address;
         this.endDate = endDate;
         this.endTimeHour = endTimeHour;

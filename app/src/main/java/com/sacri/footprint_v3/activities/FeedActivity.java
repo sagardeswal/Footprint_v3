@@ -171,7 +171,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.i(FOOTPRINT_LOGGER, "AddPlaceActivity onConnected()");
+        Log.i(FOOTPRINT_LOGGER, "FeedActivity onConnected()");
         // Provides a simple way of getting a device's location and is well suited for
         // applications that do not require a fine-grained location and that do not need location
         // updates. Gets the best and most recent location currently available, which may be null
@@ -210,14 +210,14 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
     @Override
     protected void onStart() {
-        Log.i(FOOTPRINT_LOGGER,"AddPlaceActivity onStart()");
+        Log.i(FOOTPRINT_LOGGER,"FeedActivity onStart()");
         super.onStart();
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
-        Log.i(FOOTPRINT_LOGGER, "AddPlaceActivity onStop()");
+        Log.i(FOOTPRINT_LOGGER, "FeedActivity onStop()");
         super.onStop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
@@ -243,6 +243,9 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
                     setMPlaceDetailsArrayList(placeDetailsArrayList);
                 }
+                /*
+                Placed in getPlacesInBackground thread so that data is available before the view is drawn
+                 */
                 displayFeedPager();
             }
         });
@@ -258,7 +261,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
     private void getEventsInBackground(){
         ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchEventDataInBackground(new GetEventCallback() {
+        serverRequests.fetchEventDataInBackground("-1",new GetEventCallback() {
             @Override
             public void done(ArrayList<EventDetails> eventDetailsArrayList) {
 
@@ -267,7 +270,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                     showErrorMessage();
 
                 } else {
-                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.toString());
+                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
                     setMEventDetailsArrayList(eventDetailsArrayList);
                 }
             }

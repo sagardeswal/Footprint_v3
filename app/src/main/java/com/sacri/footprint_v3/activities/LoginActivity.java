@@ -183,7 +183,7 @@ public class LoginActivity extends AppCompatActivity implements
         super.onStart();
 //        mGoogleApiClient.connect();
         if(userLocalStore.getUserLoggedIn()){
-            Intent intent = new Intent(this,MainActivity.class);
+            Intent intent = new Intent(this,FeedActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             finish();

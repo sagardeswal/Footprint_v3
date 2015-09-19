@@ -1,7 +1,9 @@
 package com.sacri.footprint_v3.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +17,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
@@ -26,7 +32,8 @@ import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
 import java.util.Date;
 
-public class AddEventActivity extends AppCompatActivity {
+public class AddEventActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private EditText etTitle;
@@ -41,12 +48,23 @@ public class AddEventActivity extends AppCompatActivity {
 
     private EventDetails eventDetails;
     private int PLACE_PICKER_REQUEST = 1;
+    private LatLng pickedLocation;
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
-
+        buildGoogleApiClient();
         eventDetails = new EventDetails();
 
         //Get reference to the widgets in the view
@@ -90,22 +108,60 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Set data in EventDetails
-                eventDetails.setEventTitle(etTitle.getText().toString());
-                eventDetails.setEventDescription(etDescription.getText().toString());
-                eventDetails.setRepeatedWeekly(swRepeatWeekly.isChecked());
-                eventDetails.setStartDate(new Date(dpStartDate.getYear(), dpStartDate.getMonth(), dpStartDate.getDayOfMonth()));
-                if (eventDetails.getRepeatedWeekly()) {
-                    eventDetails.setEndDate(eventDetails.getStartDate());
-                } else {
-                    eventDetails.setEndDate(new Date(dpEndDate.getYear(), dpEndDate.getMonth(), dpEndDate.getDayOfMonth()));
+                int missing[] = {0,0,0};
+                if(etTitle.getText()!=null && !etTitle.getText().toString().equals(""))
+                    eventDetails.setEventTitle(etTitle.getText().toString());
+                else{
+                    missing[0] = 1;
+                    Toast.makeText(AddEventActivity.this, "Title cannot be empty", Toast.LENGTH_SHORT).show();
                 }
-                eventDetails.setStartTimeHour(tpStartTime.getCurrentHour());
-                eventDetails.setStartTimeMinutes(tpStartTime.getCurrentMinute());
-                eventDetails.setEndTimeHour(tpEndTime.getCurrentHour());
-                eventDetails.setEndTimeMinutes(tpStartTime.getCurrentMinute());
+                if(etDescription.getText()!=null && !etDescription.getText().toString().equals(""))
+                    eventDetails.setEventDescription(etDescription.getText().toString());
+                else{
+                    missing[1] = 1;
+                    Toast.makeText(AddEventActivity.this, "Description cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+                if(swRepeatWeekly!=null)
+                    eventDetails.setRepeatedWeekly(swRepeatWeekly.isChecked());
+                else
+                    eventDetails.setRepeatedWeekly(false);
+                if(dpStartDate!=null)
+                    eventDetails.setStartDate(new Date(dpStartDate.getYear(), dpStartDate.getMonth(), dpStartDate.getDayOfMonth()));
+                if(dpEndDate!=null)
+                    if (eventDetails.getRepeatedWeekly()) {
+                        eventDetails.setEndDate(eventDetails.getStartDate());
+                    } else {
+                        eventDetails.setEndDate(new Date(dpEndDate.getYear(), dpEndDate.getMonth(), dpEndDate.getDayOfMonth()));
+                    }
+                if(tpStartTime!=null) {
+                    eventDetails.setStartTimeHour(tpStartTime.getCurrentHour());
+                    eventDetails.setStartTimeMinutes(tpStartTime.getCurrentMinute());
+                }
+                if(tpEndTime!=null) {
+                    eventDetails.setEndTimeHour(tpEndTime.getCurrentHour());
+                    eventDetails.setEndTimeMinutes(tpEndTime.getCurrentMinute());
+                }
 
-                //Store eventdetails in the database
-                storeEventDataInBackground();
+                if (pickedLocation == null) {
+                    Log.i(FOOTPRINT_LOGGER, "pickedLocation is null");
+                    eventDetails.setLatitude(mLastLocation.getLatitude());
+                    eventDetails.setLongitude(mLastLocation.getLongitude());
+
+                } else {
+                    eventDetails.setLatitude(pickedLocation.latitude);
+                    eventDetails.setLongitude(pickedLocation.longitude);
+                }
+                if(etLocation.getText()==null || etLocation.getText().toString().equals("")){
+                    missing[2] = 1;
+                    Toast.makeText(AddEventActivity.this, "Address cannot be empty", Toast.LENGTH_SHORT).show();
+                }else if(eventDetails.getAddress()==null){
+                    eventDetails.setAddress(etLocation.getText().toString());
+                }
+
+                if(missing[0]!=1 && missing[1]!=1 && missing[2]!=1) {
+                    //Store eventdetails in the database
+                    storeEventDataInBackground();
+                }
             }
         });
         Button bnCancel = (Button) findViewById(R.id.bnCancel);
@@ -122,7 +178,7 @@ public class AddEventActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode,
                                  int resultCode, Intent data) {
-        Log.i(FOOTPRINT_LOGGER,"onActivityResult()");
+        Log.i(FOOTPRINT_LOGGER, "onActivityResult()");
 
         if (requestCode == PLACE_PICKER_REQUEST
                 && resultCode == Activity.RESULT_OK) {
@@ -132,13 +188,8 @@ public class AddEventActivity extends AppCompatActivity {
 
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
-            LatLng latLng = place.getLatLng();
-            eventDetails.setLongitude(latLng.longitude);
-            eventDetails.setLatitude(latLng.latitude);
-//            String attributions = PlacePicker.getAttributions(data);
-//            if (attributions == null) {
-//                attributions = "";
-//            }
+            pickedLocation = place.getLatLng();
+
             etLocation.setText(name + "\n" + address);
             eventDetails.setAddress(name + "\n" + address);
         }
@@ -177,5 +228,63 @@ public class AddEventActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        Log.i(FOOTPRINT_LOGGER,"AddEventActivity onStart()");
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(FOOTPRINT_LOGGER,"AddEventActivity onStop()");
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(FOOTPRINT_LOGGER,"AddEventActivity onConnected()");
+        // Provides a simple way of getting a device's location and is well suited for
+        // applications that do not require a fine-grained location and that do not need location
+        // updates. Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Log.i(FOOTPRINT_LOGGER,"mLastLocation" + mLastLocation.toString());
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(FOOTPRINT_LOGGER, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(FOOTPRINT_LOGGER, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        Log.i(FOOTPRINT_LOGGER,"buildGoogleApiClient()");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 }

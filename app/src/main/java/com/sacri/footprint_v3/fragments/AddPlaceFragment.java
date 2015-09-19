@@ -120,13 +120,13 @@ public class AddPlaceFragment extends Fragment {
                 Log.i(FOOTPRINT_LOGGER, "bnSave clicked");
                 int missing[] = {0, 0, 0};
                 newPlace = ((AddPlaceActivity) getActivity()).getCurrentPlaceDetails();
-                if (etTitle.getText() != null)
+                if (!etTitle.getText().equals(""))
                     newPlace.setTitle(etTitle.getText().toString());
                 else {
                     missing[0] = 1;
                     Toast.makeText(getActivity(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
                 }
-                if (etDescription.getText() != null)
+                if (!etDescription.getText().equals(""))
                     newPlace.setDescription(etDescription.getText().toString());
                 else {
                     missing[1] = 1;
@@ -141,7 +141,6 @@ public class AddPlaceFragment extends Fragment {
 
                 if (pickedLocation == null) {
                     Log.i(FOOTPRINT_LOGGER, "pickedLocation is null");
-                    showInfoMessage();
                     Location mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
                     newPlace.setLatitude(mLastLocation.getLatitude());
                     newPlace.setLongitude(mLastLocation.getLongitude());
@@ -198,7 +197,6 @@ public class AddPlaceFragment extends Fragment {
 //            if (attributions == null) {
 //                attributions = "";
 //            }
-
             etLocation.setText(name + "\n" + address);
 
         }
@@ -257,12 +255,4 @@ public class AddPlaceFragment extends Fragment {
 //        return encodedImage;
 //    }
     /////////////////////////////////IMAGE HANDLING METHODS END///////////////////////////////////////////
-
-    private void showInfoMessage(){
-        Log.i(FOOTPRINT_LOGGER, "showInfoMessage()");
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        dialogBuilder.setMessage("No location picked. Using your current location.");
-        dialogBuilder.setPositiveButton("Ok", null);
-        dialogBuilder.show();
-    }
 }

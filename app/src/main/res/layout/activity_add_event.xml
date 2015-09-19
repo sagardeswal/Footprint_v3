@@ -116,6 +116,12 @@
             android:layout_height="wrap_content"
             android:text="@string/locate_button_text"
             android:id="@+id/bnLocate" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/address_label_text"
+            android:id="@+id/tvAddress" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

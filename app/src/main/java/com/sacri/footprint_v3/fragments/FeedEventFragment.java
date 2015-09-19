@@ -1,6 +1,7 @@
 package com.sacri.footprint_v3.fragments;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.FeedActivity;
+import com.sacri.footprint_v3.activities.ViewEventActivity;
 import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.utils.FeedEventAdaptor;
 
@@ -44,7 +46,7 @@ public class FeedEventFragment extends Fragment {
             showErrorMessage();
 
         } else {
-            Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.get(0).getEventTitle());
+            Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
             setListAdaptor(eventDetailsArrayList);
         }
 
@@ -62,8 +64,12 @@ public class FeedEventFragment extends Fragment {
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String eventTitle = String.valueOf(parent.getItemAtPosition(position));
-                        Toast.makeText(getActivity(), eventTitle, Toast.LENGTH_LONG).show();
+//                        String eventTitle = String.valueOf(parent.getItemAtPosition(position));
+//                        Toast.makeText(getActivity(), eventTitle, Toast.LENGTH_LONG).show();
+                        Integer eventID = Integer.valueOf(((EventDetails)parent.getItemAtPosition(position)).getEventID());
+                        Intent viewEventIntent = new Intent(getActivity(), ViewEventActivity.class);
+                        viewEventIntent.putExtra("ev_id", eventID);
+                        startActivity(viewEventIntent);
                     }
                 }
         );

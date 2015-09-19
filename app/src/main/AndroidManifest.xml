@@ -27,6 +27,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD9F8THCTnSD4hso063GhplnBrsdKzaaT0" />
+
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login"
@@ -88,6 +89,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".activities.ViewEventActivity"
+            android:label="@string/title_activity_view_event" >
+        </activity>
     </application>
 
 </manifest>
