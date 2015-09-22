@@ -191,7 +191,7 @@ public class ServerRequests {
             try {
                 String result = sendPostRequest(LOGIN_URL, data);
                 Log.i(FOOTPRINT_LOGGER, "Result : " + result);
-                if (result.length() == 154) {
+                if (result.length() == 0) {
                     returnedUserDetails = null;
                     Log.i(FOOTPRINT_LOGGER, "JSON Object is Null : ");
                 } else {
