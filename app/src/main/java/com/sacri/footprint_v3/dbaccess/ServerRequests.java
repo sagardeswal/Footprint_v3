@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
 
+import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.callback.GetEventCallback;
@@ -63,10 +64,10 @@ public class ServerRequests {
     private static final String HTTP_ERROR_MSG ="HTTP ERROR WHILE LOGGING IN";
 
     public ServerRequests(Context context){
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Footprint");
-        progressDialog.setMessage("Loading..");
+        progressDialog = new ProgressDialog(context,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Processing...");
     }
 
 
@@ -152,7 +153,6 @@ public class ServerRequests {
 
     ////////////////////////////////LOGIN USER STARTS///////////////////////////////////////
     public void loginUserInBackground(UserDetails userDetails, LoginUserCallback loginUserCallback){
-        progressDialog.show();
         new LoginUserAsyncTask(userDetails,loginUserCallback).execute();
     }
 
@@ -184,9 +184,9 @@ public class ServerRequests {
         protected UserDetails doInBackground(Void... params) {
             UserDetails returnedUserDetails = null;
             HashMap<String,String> data = new HashMap<>();
-            Log.i(FOOTPRINT_LOGGER, "username : " + userDetails.getUsername());
+            Log.i(FOOTPRINT_LOGGER, "email : " + userDetails.getEmail());
             Log.i(FOOTPRINT_LOGGER, "password : " + userDetails.getPaswordhashcode());
-            data.put("username",userDetails.getUsername());
+            data.put("email",userDetails.getEmail());
             data.put("password",userDetails.getPaswordhashcode());
             try {
                 String result = sendPostRequest(LOGIN_URL, data);
@@ -199,8 +199,7 @@ public class ServerRequests {
                     String fullname = jsonObject.getString("usr_fullname");
                     String mobile = jsonObject.getString("usr_mobile");
                     String email = jsonObject.getString("usr_email");
-                    String username = jsonObject.getString("usr_username");
-                    returnedUserDetails = new UserDetails(username, fullname, mobile, email);
+                    returnedUserDetails = new UserDetails(fullname, mobile, email);
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -237,7 +236,6 @@ public class ServerRequests {
             String response = null;
             HashMap<String,String> data = new HashMap<>();
             data.put("usr_fullname",userDetails.getFullname());
-            data.put("usr_username", userDetails.getUsername());
             data.put("usr_email",userDetails.getEmail());
             data.put("usr_mobile",userDetails.getMobile());
             data.put("usr_passwordhashcode",userDetails.getPaswordhashcode());

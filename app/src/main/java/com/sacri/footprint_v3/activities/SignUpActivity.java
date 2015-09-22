@@ -1,5 +1,6 @@
 package com.sacri.footprint_v3.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,24 +10,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.RegisterUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
+import com.sacri.footprint_v3.utils.UserLocalStore;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText etFullName;
-    private EditText etUsername;
     private EditText etPassword;
-    private EditText etReEnterPassword;
     private EditText etEmail;
     private EditText etMobile;
-
+    private TextView tvLoginLink;
     private UserDetails newUser;
-
+    private Button bnSignUp;
+    private UserLocalStore userLocalStore;
     private static final String NULL_STRING = "";
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 
@@ -34,70 +36,101 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        userLocalStore = new UserLocalStore(this);
         //Get reference to widgets
         etFullName = (EditText) findViewById(R.id.etFullname);
-        etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
-        etReEnterPassword = (EditText) findViewById(R.id.etReEnterPassword);
         etEmail = (EditText) findViewById(R.id.etEmail);
         etMobile = (EditText) findViewById(R.id.etMobile);
-        Button bnSignUp = (Button) findViewById(R.id.bnSignUp);
-
+        bnSignUp = (Button) findViewById(R.id.bnSignUp);
+        tvLoginLink = (TextView) findViewById(R.id.tvLoginLink);
         //Create new instance of UserDetails
         newUser = new UserDetails();
 
         bnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int missing[] = {0, 0, 0, 0, 0};
-                int passwordsMatch = 0;
-                //Set values in newUser
-                if (etFullName.getText() != null)
-                    newUser.setFullname(etFullName.getText().toString());
-                else {
-                    missing[0] = 1;
-                    Toast.makeText(SignUpActivity.this, "Full name cannot be empty.", Toast.LENGTH_SHORT).show();
-                }
 
-                if (etUsername.getText() != null)
-                    newUser.setUsername(etUsername.getText().toString());
-                else {
-                    missing[1] = 1;
-                    Toast.makeText(SignUpActivity.this, "Username cannot be empty.", Toast.LENGTH_SHORT).show();
-                }
-                if (etEmail.getText() != null)
-                    newUser.setEmail(etEmail.getText().toString());
-                else {
-                    missing[2] = 1;
-                    Toast.makeText(SignUpActivity.this, "Email cannot be empty.", Toast.LENGTH_SHORT).show();
-                }
-                if (etMobile.getText() != null)
-                    newUser.setMobile(etMobile.getText().toString());
-                else {
-                    missing[3] = 1;
-                    Toast.makeText(SignUpActivity.this, "Mobile cannot be empty.", Toast.LENGTH_SHORT).show();
-                }
-                if (etPassword.getText() != null && etReEnterPassword.getText() != null) {
-                    //Check if Password fields match
-                    if (etPassword.getText().toString().equals(etReEnterPassword.getText().toString())) {
-                        newUser.setPaswordhashcode(etPassword.getText().toString());
-                        passwordsMatch = 1;
-                    } else {
-                        Toast.makeText(SignUpActivity.this, "Passwords don't match", Toast.LENGTH_SHORT).show();
-                        etPassword.setText(NULL_STRING);
-                        etReEnterPassword.setText(NULL_STRING);
-                    }
-                } else {
-                    missing[4] = 1;
-                    Toast.makeText(SignUpActivity.this, "Please choose a password.", Toast.LENGTH_SHORT).show();
-                }
-                if (missing[0] != 1 && missing[1] != 1 && missing[2] != 1 && missing[3] != 1 && missing[4] != 1 && passwordsMatch == 1) {
-                    storeUserDetails();
-                }
+                signup();
+            }
+        });
+        tvLoginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
+    }
+
+    public void signup() {
+        Log.d(FOOTPRINT_LOGGER, "Signup");
+
+        if (!validate()) {
+            onSignupFailed("Please fill the details correctly");
+            return;
+        }
+        bnSignUp.setEnabled(false);
+        storeUserDetails();
+    }
+
+    public void onSignupSuccess() {
+        bnSignUp.setEnabled(true);
+        setResult(RESULT_OK, null);
+        logUserIn(newUser);
+        Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    public void onSignupFailed(String message) {
+        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+
+        bnSignUp.setEnabled(true);
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+
+        String name = etFullName.getText().toString();
+        String email = etEmail.getText().toString();
+        String mobile = etMobile.getText().toString();
+        String password = etPassword.getText().toString();
+
+        if (name.isEmpty() || name.length() < 3) {
+            etFullName.setError("at least 3 characters");
+            valid = false;
+        } else {
+            newUser.setFullname(name);
+            etFullName.setError(null);
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("enter a valid email address");
+            valid = false;
+        } else {
+            newUser.setEmail(email);
+            etEmail.setError(null);
+        }
+
+        if (mobile.isEmpty() || mobile.length() < 10) {
+            etMobile.setError("not valid mobile number");
+            valid = false;
+        } else {
+            newUser.setMobile(mobile);
+            etMobile.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            etPassword.setError("between 4 and 10 alphanumeric characters");
+            valid = false;
+        } else {
+            newUser.setPaswordhashcode(password);
+            etPassword.setError(null);
+        }
+
+
+        return valid;
     }
 
     @Override
@@ -137,17 +170,18 @@ public class SignUpActivity extends AppCompatActivity {
         serverRequests.registerUserInBackground(newUser, new RegisterUserCallback() {
             @Override
             public void done(String response) {
-                if(!response.contains(newUser.getUsername())) {
-                    Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
-                    finish();
-                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-                else{
-                    Toast.makeText(SignUpActivity.this, "Username/Email already exits", Toast.LENGTH_SHORT).show();
+                if (!response.contains(newUser.getEmail())) {
+                    onSignupSuccess();
+                } else {
+                    onSignupFailed("Username/Email already exits");
                 }
             }
         });
 
+    }
+
+    private void logUserIn(UserDetails userDetails){
+        userLocalStore.storeUserData(userDetails);
+        userLocalStore.setUserLoggedIn(true);
     }
 }

@@ -2,13 +2,13 @@
          
     $con=mysqli_connect("mysql6.000webhost.com", "a6596261_sagar","pr0gramm3r", "a6596261_footp") or die(mysql_error());
 	
-	if(isset($_POST['username']) && !empty($_POST['username']) AND isset($_POST['password']) && !empty($_POST['password'])){
+	if(isset($_POST['email']) && !empty($_POST['email']) AND isset($_POST['password']) && !empty($_POST['password'])){
     // Both fields are being posted and there not empty
-	$username = mysql_escape_string($_POST['username']); // Set variable for the username
+	$email = mysql_escape_string($_POST['email']); // Set variable for the email
     $passwordhashcode = mysql_escape_string(md5($_POST['password'])); // Set variable for the password and convert it to an MD5 hash.
 
-    $statement = mysqli_prepare($con,"SELECT usr_username, usr_fullname, usr_email, usr_mobile, usr_passwordhashcode FROM fp_user_details WHERE usr_username= ? AND usr_passwordhashcode= ? AND active='1'") or die(mysql_error()); 
-    mysqli_stmt_bind_param($statement, "ss", $username, $passwordhashcode);
+    $statement = mysqli_prepare($con,"SELECT usr_username, usr_fullname, usr_email, usr_mobile, usr_passwordhashcode FROM fp_user_details WHERE usr_email= ? AND usr_passwordhashcode= ? AND active='1'") or die(mysql_error()); 
+    mysqli_stmt_bind_param($statement, "ss", $email, $passwordhashcode);
 	mysqli_stmt_execute($statement);
 	mysqli_stmt_store_result($statement);
 	mysqli_stmt_bind_result($statement, $usr_username, $usr_fullname, $usr_email, $usr_mobile, $usr_passwordhashcode);

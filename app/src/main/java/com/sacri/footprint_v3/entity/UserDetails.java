@@ -9,7 +9,6 @@ import android.content.Intent;
 public class UserDetails {
 
     private Integer userID;
-    private String username;
     private String fullname;
     private String mobile;
     private String email;
@@ -18,16 +17,15 @@ public class UserDetails {
     public UserDetails() {
     }
 
-    public UserDetails(String username, String paswordhashcode) {
-        this.username = username;
+    public UserDetails(String email, String paswordhashcode) {
+        this.email = email;
         this.paswordhashcode = paswordhashcode;
     }
 
-    public UserDetails(String username, String fullname, String mobile, String email) {
+    public UserDetails(String fullname, String mobile, String email) {
         this.email = email;
         this.fullname = fullname;
         this.mobile = mobile;
-        this.username = username;
     }
 
     public String getPaswordhashcode() {
@@ -62,13 +60,6 @@ public class UserDetails {
         this.mobile = mobile;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public Integer getUserID() {
         return userID;
@@ -83,7 +74,6 @@ public class UserDetails {
         return "UserDetails{" +
                 "email='" + email + '\'' +
                 ", userID=" + userID +
-                ", username='" + username + '\'' +
                 ", fullname='" + fullname + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", paswordhashcode='" + paswordhashcode + '\'' +

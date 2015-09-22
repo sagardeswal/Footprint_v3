@@ -60,5 +60,16 @@
     <string name="check_in_button_text">Check In</string>
     <string name="get_directions_button_text">Get Directions</string>
     <string name="address_label_text">Address</string>
+    <string name="Cancel">Cancel</string>
+    <string name="gps_network_not_enabled">Location services are not enabled. Please enable Location Services.</string>
+    <string name="open_location_settings">Turn On Location Services</string>
+    <string name="title_activity_launch">LaunchActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Login</string>
+    <string name="invalid_email">This email address is invalid</string>
+    <string name="invalid_password">Password is too short</string>
+    <string name="incorrect_password">Password is incorrect</string>
+    <string name="field_required">This field is required</string>
 
 </resources>

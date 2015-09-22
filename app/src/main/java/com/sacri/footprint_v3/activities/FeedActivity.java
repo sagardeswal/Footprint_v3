@@ -1,9 +1,13 @@
 package com.sacri.footprint_v3.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -48,13 +52,14 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
-        buildGoogleApiClient();
+        isNetworkAndGPSAvailable();
+    }
 
+    private void onActivityStart(){
 
-        getPlacesInBackground();
-        getEventsInBackground();
-
-
+            buildGoogleApiClient();
+            getPlacesInBackground();
+            getEventsInBackground();
 
     }
 
@@ -177,7 +182,11 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         // updates. Gets the best and most recent location currently available, which may be null
         // in rare cases when a location is not available.
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.i(FOOTPRINT_LOGGER, "mLastLocation" + mLastLocation.toString());
+        if(mLastLocation!=null)
+            Log.i(FOOTPRINT_LOGGER, "mLastLocation" + mLastLocation.toString());
+        else {
+            Log.i(FOOTPRINT_LOGGER, "mLastLocation is null");
+        }
     }
 
     @Override
@@ -193,6 +202,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
         Log.i(FOOTPRINT_LOGGER, "Connection suspended");
+        if(mGoogleApiClient!=null)
         mGoogleApiClient.connect();
     }
 
@@ -209,22 +219,30 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+//        isNetworkAndGPSAvailable();
+    }
+
+    @Override
     protected void onStart() {
-        Log.i(FOOTPRINT_LOGGER,"FeedActivity onStart()");
+        Log.i(FOOTPRINT_LOGGER, "FeedActivity onStart()");
         super.onStart();
-        mGoogleApiClient.connect();
+//        isNetworkAndGPSAvailable();
+        if(mGoogleApiClient!=null)
+            mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         Log.i(FOOTPRINT_LOGGER, "FeedActivity onStop()");
         super.onStop();
-        if (mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient!=null && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
     }
 
-    public Location getmLastLocation(){
+    public Location getmLastLocation() {
         Log.i(FOOTPRINT_LOGGER,"getmLastLocation()");
         return mLastLocation;
     }
@@ -237,7 +255,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
                 if (placeDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
-                    showErrorMessage();
+                    showErrorMessage("No Places Found.");
 
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
@@ -267,7 +285,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
                 if (eventDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is null");
-                    showErrorMessage();
+                    showErrorMessage("No Events Found.");
 
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
@@ -285,11 +303,54 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         return mEventDetailsArrayList;
     }
 
-    private void showErrorMessage(){
+    private void showErrorMessage(String message){
         Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("No Places Found");
+        dialogBuilder.setMessage(message);
         dialogBuilder.setPositiveButton("Ok", null);
         dialogBuilder.show();
     }
+
+    private void isNetworkAndGPSAvailable(){
+        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setMessage(this.getResources().getString(R.string.gps_network_not_enabled));
+            dialog.setPositiveButton(this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                    //get gps
+                }
+            });
+            dialog.setNegativeButton(this.getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.cancel();
+                    finish();
+
+                }
+            });
+            dialog.show();
+        }
+        else{
+            onActivityStart();
+        }
+    }
+
 }

@@ -4,17 +4,16 @@
 	$fullname = $_POST["usr_fullname"];
 	$mobile = $_POST["usr_mobile"];
 	$email = $_POST["usr_email"];
-	$username = $_POST["usr_username"];
 	$passwordhashcode = (md5($_POST["usr_passwordhashcode"]));
 	$msg="";
-	if(isset($username) && !empty($username) AND isset($email) && !empty($email) AND isset($fullname) && !empty($fullname) AND isset($mobile) && !empty($mobile))
+	if(isset($email) && !empty($email) AND isset($fullname) && !empty($fullname) AND isset($mobile) && !empty($mobile))
 	{
  		if(!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email)){
     		// Return Error - Invalid Email
 		}else{
     		// Return Success 
-    		$statement = mysqli_prepare($con,"SELECT usr_username FROM fp_user_details WHERE usr_username= ? OR usr_email= ?") or die(mysql_error()); 
-		    mysqli_stmt_bind_param($statement, "ss", $username, $email);
+    		$statement = mysqli_prepare($con,"SELECT usr_email FROM fp_user_details WHERE usr_email= ?") or die(mysql_error()); 
+		    mysqli_stmt_bind_param($statement, "s", $email);
 			mysqli_stmt_execute($statement);
 			mysqli_stmt_store_result($statement);
 			mysqli_stmt_bind_result($statement, $check);
@@ -24,8 +23,8 @@
 			}else{
 				mysqli_stmt_close($statement);
 				$hash = md5( rand(0,1000) ); // Generate random 32 character hash and assign it to a local variable.
-				$statement = mysqli_prepare($con, "INSERT INTO fp_user_details (usr_fullname, usr_mobile, usr_email, usr_username, usr_passwordhashcode, hash) VALUES (?,?,?,?,?,?)") or die(mysql_error());
-				mysqli_stmt_bind_param($statement, "ssssss", $fullname, $mobile, $email, $username, $passwordhashcode, $hash);
+				$statement = mysqli_prepare($con, "INSERT INTO fp_user_details (usr_fullname, usr_mobile, usr_email, usr_passwordhashcode, hash) VALUES (?,?,?,?,?,?)") or die(mysql_error());
+				mysqli_stmt_bind_param($statement, "sssss", $fullname, $mobile, $email, $passwordhashcode, $hash);
 				mysqli_stmt_execute($statement);
 				echo json_encode($check);
 				mysqli_stmt_close($statement);

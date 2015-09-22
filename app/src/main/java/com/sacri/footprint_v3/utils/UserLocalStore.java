@@ -22,7 +22,6 @@ public class UserLocalStore {
     public void storeUserData(UserDetails userDetails){
         SharedPreferences.Editor spEditor = userDetailsLocalDatabase.edit();
         spEditor.putString("fullname", userDetails.getFullname());
-        spEditor.putString("username", userDetails.getUsername());
         spEditor.putString("email", userDetails.getEmail());
         spEditor.putString("mobile", userDetails.getMobile());
         spEditor.commit();
@@ -30,10 +29,9 @@ public class UserLocalStore {
 
     public UserDetails getLoggedInUser(){
         String fullname = userDetailsLocalDatabase.getString("fullname", "");
-        String username = userDetailsLocalDatabase.getString("username", "");
         String email = userDetailsLocalDatabase.getString("mobile", "");
         String mobile = userDetailsLocalDatabase.getString("mobile", "");
-        UserDetails userDetails = new UserDetails(username,fullname,email,mobile);
+        UserDetails userDetails = new UserDetails(fullname,email,mobile);
         return userDetails;
     }
 
