@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
- * Created by bazinga on 12/09/15.
+ * Created by Sagar Deswal on 12/09/15.
  */
 public class PlaceDetails {
 
@@ -19,10 +19,27 @@ public class PlaceDetails {
     private Double longitude;
     private Double latitude;
 
+
+
     public PlaceDetails() {
     }
 
+    public PlaceDetails(Integer locID, Integer placeID) {
+        this.locID = locID;
+        this.placeID = placeID;
+    }
+
     public PlaceDetails(String title, String description, Integer locID, String category, Double longitude, Double latitude) {
+        this.title = title;
+        this.description = description;
+        this.locID = locID;
+        this.category = category;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public PlaceDetails(Integer placeID, String title, String description, Integer locID, String category, Double longitude, Double latitude) {
+        this.placeID = placeID;
         this.title = title;
         this.description = description;
         this.locID = locID;

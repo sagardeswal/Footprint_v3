@@ -2,20 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sacri.footprint_v3" >
 
-    <uses-sdk android:minSdkVersion="21" />
-
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- <uses-permission android:name="android.permission.USE_CREDENTIALS" /> -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
-    <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -33,7 +29,7 @@
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.Dark">
+            android:theme="@style/AppTheme.Dark" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,7 +39,7 @@
         <activity
             android:name=".activities.SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:theme="@style/AppTheme.Dark">
+            android:theme="@style/AppTheme.Dark" >
         </activity>
         <activity
             android:name=".activities.AddPlaceActivity"
@@ -96,6 +92,10 @@
         <activity
             android:name=".activities.ViewEventActivity"
             android:label="@string/title_activity_view_event" >
+        </activity>
+        <activity
+            android:name=".activities.CheckInActivity"
+            android:label="@string/title_activity_check_in" >
         </activity>
     </application>
 

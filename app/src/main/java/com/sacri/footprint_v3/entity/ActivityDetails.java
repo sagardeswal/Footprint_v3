@@ -1,7 +1,7 @@
 package com.sacri.footprint_v3.entity;
 
 /**
- * Created by bazinga on 14/09/15.
+ * Created by Sagar Deswal on 14/09/15.
  */
 public class ActivityDetails {
 

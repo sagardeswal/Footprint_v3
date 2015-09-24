@@ -71,5 +71,6 @@
     <string name="invalid_password">Password is too short</string>
     <string name="incorrect_password">Password is incorrect</string>
     <string name="field_required">This field is required</string>
+    <string name="title_activity_check_in">CheckInActivity</string>
 
 </resources>

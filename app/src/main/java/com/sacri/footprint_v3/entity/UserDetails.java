@@ -1,7 +1,5 @@
 package com.sacri.footprint_v3.entity;
 
-import android.content.Intent;
-
 /**
  * Created by Sagar Deswal on 11/09/15.
  *
@@ -26,6 +24,13 @@ public class UserDetails {
         this.email = email;
         this.fullname = fullname;
         this.mobile = mobile;
+    }
+
+    public UserDetails(Integer userID, String fullname, String mobile, String email) {
+        this.email = email;
+        this.fullname = fullname;
+        this.mobile = mobile;
+        this.userID = userID;
     }
 
     public String getPaswordhashcode() {

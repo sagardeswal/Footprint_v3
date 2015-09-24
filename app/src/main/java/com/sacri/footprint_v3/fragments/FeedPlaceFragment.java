@@ -1,6 +1,7 @@
 package com.sacri.footprint_v3.fragments;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.FeedActivity;
+import com.sacri.footprint_v3.activities.ViewPlaceProfileActivity;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.utils.FeedPlaceAdaptor;
 
@@ -24,7 +26,7 @@ public class FeedPlaceFragment extends Fragment {
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private ListAdapter feedPlaceAdaptor;
     private View v;
-
+    private ArrayList<PlaceDetails> placeDetailsArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,21 +40,21 @@ public class FeedPlaceFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_place_feed, container, false);
 
-        ArrayList<PlaceDetails> placeDetailsArrayList =((FeedActivity) getActivity()).getMPlaceDetailsArrayList();
+        placeDetailsArrayList =((FeedActivity) getActivity()).getMPlaceDetailsArrayList();
 
                 if (placeDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
                     showErrorMessage();
 
                 } else {
-                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
-                    setListAdaptor(placeDetailsArrayList);
+                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList size: " + placeDetailsArrayList.size());
+                    setListAdaptor();
                 }
 
         return v;
     }
 
-    private void setListAdaptor(ArrayList<PlaceDetails> placeDetailsArrayList ){
+    private void setListAdaptor( ){
         feedPlaceAdaptor = new FeedPlaceAdaptor(getActivity(), placeDetailsArrayList);
         ListView contentList = (ListView) v.findViewById(R.id.lvPlaces);
         contentList.setAdapter(feedPlaceAdaptor);
@@ -61,8 +63,18 @@ public class FeedPlaceFragment extends Fragment {
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String placeTitle = String.valueOf(parent.getItemAtPosition(position));
-                        Toast.makeText(getActivity(), placeTitle, Toast.LENGTH_LONG).show();
+                        PlaceDetails selectedPlace = placeDetailsArrayList.get(position);
+                        Intent viewPlaceIntent = new Intent(getActivity(), ViewPlaceProfileActivity.class);
+                        Bundle placeData = new Bundle();
+                        Log.i(FOOTPRINT_LOGGER, "placeID=" + selectedPlace.getPlaceID());
+                        placeData.putInt("placeID", selectedPlace.getPlaceID());
+                        Log.i(FOOTPRINT_LOGGER, "placeTitle=" + selectedPlace.getTitle());
+                        placeData.putString("placeTitle", selectedPlace.getTitle());
+                        Log.i(FOOTPRINT_LOGGER, "placeLocID=" + selectedPlace.getLocID());
+                        placeData.putInt("placeLocID", selectedPlace.getLocID());
+                        viewPlaceIntent.putExtra("placeData",placeData);
+                        startActivity(viewPlaceIntent);
+
                     }
                 }
         );

@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 import com.sacri.footprint_v3.fragments.FeedEventFragment;
-import com.sacri.footprint_v3.fragments.FeedPostFragment;
+import com.sacri.footprint_v3.fragments.FeedStoryFragment;
 import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 
 
@@ -21,7 +21,7 @@ public class FeedPagerAdaptor extends FragmentPagerAdapter {
             case 0:
                 // The first section of the app is the most interesting -- it offers
                 // a launchpad into the other demonstrations in this example application.
-                return new FeedPostFragment();
+                return new FeedStoryFragment();
 
             case 1:
 

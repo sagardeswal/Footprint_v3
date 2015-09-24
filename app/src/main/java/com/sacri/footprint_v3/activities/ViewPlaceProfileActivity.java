@@ -1,18 +1,41 @@
 package com.sacri.footprint_v3.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.entity.PlaceDetails;
 
 public class ViewPlaceProfileActivity extends AppCompatActivity {
 
+    private final int REQUEST_CHECKIN_CODE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_place_profile);
+
+        Button bnCheckIn = (Button) findViewById(R.id.bnCheckIn);
+        bnCheckIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent checkinIntent = new Intent(ViewPlaceProfileActivity.this,CheckInActivity.class);
+                Bundle placeData = getIntent().getBundleExtra("placeData");
+                checkinIntent.putExtra("placeData",placeData);
+                startActivityForResult(checkinIntent, REQUEST_CHECKIN_CODE);
+            }
+        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        finish();
     }
 
     @Override

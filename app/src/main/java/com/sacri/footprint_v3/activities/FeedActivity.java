@@ -21,9 +21,12 @@ import com.google.android.gms.location.LocationServices;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetEventCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
+import com.sacri.footprint_v3.callback.GetStoryCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
+import com.sacri.footprint_v3.entity.Story;
+import com.sacri.footprint_v3.entity.UserDetails;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
 import com.sacri.footprint_v3.utils.UserLocalStore;
 
@@ -33,6 +36,8 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private ViewPager feedPager;
+    private UserLocalStore userLocalStore;
+    private UserDetails loggedUser;
     /**
      * Provides the entry point to Google Play services.
      */
@@ -44,6 +49,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     protected Location mLastLocation;
     public static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
     public static ArrayList<EventDetails> mEventDetailsArrayList;
+    public static ArrayList<Story> mStoryArrayList;
 
 
     @Override
@@ -52,6 +58,9 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
+        userLocalStore = new UserLocalStore(this);
+        loggedUser = userLocalStore.getLoggedInUser();
+        Log.i(FOOTPRINT_LOGGER, "Logged In User:" + loggedUser.toString());
         isNetworkAndGPSAvailable();
     }
 
@@ -60,6 +69,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
             buildGoogleApiClient();
             getPlacesInBackground();
             getEventsInBackground();
+            getStoryDataInBackground();
 
     }
 
@@ -258,7 +268,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
                     showErrorMessage("No Places Found.");
 
                 } else {
-                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
+                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList.size(): " + placeDetailsArrayList.size());
                     setMPlaceDetailsArrayList(placeDetailsArrayList);
                 }
                 /*
@@ -301,6 +311,33 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
     public ArrayList<EventDetails> getMEventDetailsArrayList(){
         return mEventDetailsArrayList;
+    }
+
+
+    private void getStoryDataInBackground(){
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.fetchStoryDataInBackground(loggedUser.getUserID().toString(), new GetStoryCallback() {
+            @Override
+            public void done(ArrayList<Story> storyArrayList) {
+
+                if (storyArrayList == null) {
+                    Log.i(FOOTPRINT_LOGGER, "storyArrayList is null");
+                    showErrorMessage("No Stories Found.");
+
+                } else {
+                    Log.i(FOOTPRINT_LOGGER, "storyArrayList.size(): " + storyArrayList.size());
+                    setmStoryArrayList(storyArrayList);
+                }
+            }
+        });
+    }
+
+    public static ArrayList<Story> getmStoryArrayList() {
+        return mStoryArrayList;
+    }
+
+    public static void setmStoryArrayList(ArrayList<Story> mStoryArrayList) {
+        FeedActivity.mStoryArrayList = mStoryArrayList;
     }
 
     private void showErrorMessage(String message){

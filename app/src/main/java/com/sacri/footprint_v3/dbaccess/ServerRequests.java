@@ -2,7 +2,6 @@ package com.sacri.footprint_v3.dbaccess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -18,25 +17,22 @@ import java.util.Map;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Base64;
 import android.util.Log;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
+import com.sacri.footprint_v3.callback.AddStoryCallback;
 import com.sacri.footprint_v3.callback.GetEventCallback;
 import com.sacri.footprint_v3.callback.GetPlaceCallback;
+import com.sacri.footprint_v3.callback.GetStoryCallback;
 import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.callback.RegisterUserCallback;
 import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
+import com.sacri.footprint_v3.entity.Story;
 import com.sacri.footprint_v3.entity.UserDetails;
-import com.sacri.footprint_v3.fragments.LoadingDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,8 +54,10 @@ public class ServerRequests {
     public static final String REGISTER_URL = SERVER_ADDRESS + "/register.php";
     public static final String ADD_PLACE_URL = SERVER_ADDRESS + "/place.php";
     public static final String ADD_EVENT_URL = SERVER_ADDRESS + "/event.php";
+    public static final String ADD_STORY_URL = SERVER_ADDRESS + "/story.php";
     public static final String FETCH_PLACE_URL = SERVER_ADDRESS + "/fetch_places.php";
     public static final String FETCH_EVENT_URL = SERVER_ADDRESS + "/fetch_events.php";
+    public static final String FETCH_STORY_URL = SERVER_ADDRESS + "/fetch_stories.php";
 
     private static final String HTTP_ERROR_MSG ="HTTP ERROR WHILE LOGGING IN";
 
@@ -196,10 +194,11 @@ public class ServerRequests {
                     Log.i(FOOTPRINT_LOGGER, "JSON Object is Null : ");
                 } else {
                     JSONObject jsonObject = new JSONObject(result);
+                    Integer userID = jsonObject.getInt("usr_ID");
                     String fullname = jsonObject.getString("usr_fullname");
                     String mobile = jsonObject.getString("usr_mobile");
                     String email = jsonObject.getString("usr_email");
-                    returnedUserDetails = new UserDetails(fullname, mobile, email);
+                    returnedUserDetails = new UserDetails(userID,fullname, mobile, email);
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -350,13 +349,14 @@ public class ServerRequests {
                     JSONArray jsonArray = new JSONArray(result);
                     for(int i=0; i<jsonArray.length();i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Integer placeID = jsonObject.getInt("pl_ID");
                         String title = jsonObject.getString("pl_title");
                         String description = jsonObject.getString("pl_description");
                         int locID = jsonObject.getInt("pl_loc_id");
                         String category = jsonObject.getString("pl_category");
                         String longitude = jsonObject.getString("pl_loc_long");
                         String latitude = jsonObject.getString("pl_loc_lat");
-                        PlaceDetails placeDetails = new PlaceDetails(
+                        PlaceDetails placeDetails = new PlaceDetails(placeID,
                                 title,
                                 description,
                                 locID,
@@ -448,89 +448,6 @@ public class ServerRequests {
 
     ////////////////////////////////ADD EVENT ENDS///////////////////////////////////////
 
-    ////////////////////////////////FETCH PLACES STARTS///////////////////////////////////////
-
-//    public void fetchEventDataInBackground(GetEventCallback getEventCallback){
-//        progressDialog.show();
-//        new FetchEventDataAsyncTask(getEventCallback).execute();
-//    }
-//
-//    public class FetchEventDataAsyncTask extends AsyncTask<Void, Void, ArrayList<EventDetails>> {
-//
-//        GetEventCallback getEventCallback;
-//
-//        FetchEventDataAsyncTask(GetEventCallback getEventCallback) {
-//            this.getEventCallback = getEventCallback;
-//        }
-//
-//        @Override
-//        protected ArrayList<EventDetails> doInBackground(Void... params) {
-//            Log.i(FOOTPRINT_LOGGER, "doInBackground begins");
-//            HashMap<String,String> data = new HashMap<>();
-//            data.put("location", "New Delhi");
-//            ArrayList<EventDetails> eventDetailsArrayList = new ArrayList<>();
-//            try {
-//                String result = sendPostRequest(FETCH_EVENT_URL, data);
-//                Log.i(FOOTPRINT_LOGGER, "Result : " + result);
-//                if(result.length()==154){
-//                    eventDetailsArrayList = null;
-//                    Log.i(FOOTPRINT_LOGGER, "JSON Object is Null : ");
-//                }else{
-//                    JSONArray jsonArray = new JSONArray(result);
-//                    for(int i=0; i<jsonArray.length();i++) {
-//                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                        String ev_title = jsonObject.getString("ev_title");
-//                        String ev_description = jsonObject.getString("ev_description");
-//                        String ev_repeat_weekly = jsonObject.getString("ev_repeat_weekly");
-//                        String ev_start_date = jsonObject.getString("ev_start_date");
-//                        DateFormat startDateFormat = new SimpleDateFormat("dd MM yyyy");
-//                        Date startDate = startDateFormat.parse(ev_start_date);
-//                        String ev_end_date = jsonObject.getString("ev_end_date");
-//                        DateFormat endDateFormat = new SimpleDateFormat("dd MM yyyy");
-//                        Date endDate = endDateFormat.parse(ev_end_date);
-//                        String ev_start_time_hour = jsonObject.getString("ev_start_time_hour");
-//                        String ev_start_time_minute = jsonObject.getString("ev_start_time_minute");
-//                        String ev_end_time_hour = jsonObject.getString("ev_end_time_hour");
-//                        String ev_end_time_minute = jsonObject.getString("ev_end_time_minute");
-//                        String loc_longitude = jsonObject.getString("loc_longitude");
-//                        String loc_latitude = jsonObject.getString("loc_latitude");
-//                        String ev_address = jsonObject.getString("ev_address");
-//                        EventDetails eventDetails = new EventDetails(
-//                                ev_title,
-//                                ev_description,
-//                                Boolean.parseBoolean(ev_repeat_weekly),
-//                                startDate,
-//                                endDate,
-//                                Integer.parseInt(ev_start_time_hour),
-//                                Integer.parseInt(ev_start_time_minute),
-//                                Integer.parseInt(ev_end_time_hour),
-//                                Integer.parseInt(ev_end_time_minute),
-//                                Double.parseDouble(loc_longitude),
-//                                Double.parseDouble(loc_latitude),
-//                                ev_address);
-//                        eventDetailsArrayList.add(eventDetails);
-//                        Log.i(FOOTPRINT_LOGGER, "eventDetails : " + eventDetails.toString());
-//                    }
-//                }
-//            }catch(Exception e){
-//                e.printStackTrace();
-//            }
-//            if(eventDetailsArrayList==null){
-//                Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is Null : ");
-//            }
-//            return eventDetailsArrayList;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(ArrayList<EventDetails> eventDetailsArrayList) {
-//            progressDialog.dismiss();
-//            getEventCallback.done(eventDetailsArrayList);
-//            super.onPostExecute(eventDetailsArrayList);
-//        }
-//    }
-
-    ////////////////////////////////FETCH EVENTS ENDS///////////////////////////////////////
-
     ///////////////////////////////FETCH EVENT STARTS///////////////////////////////////////
 
     public void fetchEventDataInBackground(String eventID, GetEventCallback getEventCallback){
@@ -619,6 +536,121 @@ public class ServerRequests {
 
     ///////////////////////////////FETCH EVENT ENDS///////////////////////////////////////
 
+
+    ////////////////////////////////ADD STORY STARTS///////////////////////////////////////
+    public void addStoryDataInBackground(Story newStory, AddStoryCallback addStoryCallback){
+        progressDialog.show();
+        new AddStoryDataAsyncTask(newStory,addStoryCallback).execute();
+    }
+
+    public class AddStoryDataAsyncTask extends AsyncTask<Void, Void, String> {
+
+        Story newStory;
+        AddStoryCallback addStoryCallback;
+
+        public AddStoryDataAsyncTask(Story newStory, AddStoryCallback addStoryCallback) {
+            this.addStoryCallback = addStoryCallback;
+            this.newStory = newStory;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            Log.i(FOOTPRINT_LOGGER, "AddStoryDataAsyncTask doInBackground begins");
+            String response = null;
+            HashMap<String,String> data = new HashMap<>();
+            data.put("st_usr_id", newStory.getUserID().toString());
+            data.put("st_pl_id",newStory.getPlaceID().toString());
+            data.put("st_loc_id", newStory.getLocID().toString());
+            data.put("st_text", newStory.getText());
+            Log.i(FOOTPRINT_LOGGER, "New story : " + newStory.toString());
+            try {
+                String result = sendPostRequest(ADD_STORY_URL, data);
+                Log.i(FOOTPRINT_LOGGER, "Result : " + result);
+                response = result;
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            return response;
+
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            progressDialog.dismiss();
+            addStoryCallback.done();
+            super.onPostExecute(response);
+        }
+    }
+
+    ////////////////////////////////ADD STORY ENDS///////////////////////////////////////
+
+
+    ////////////////////////////////FETCH STORY STARTS///////////////////////////////////////
+
+    public void fetchStoryDataInBackground(String userID, GetStoryCallback getStoryCallback){
+        progressDialog.show();
+        new FetchStoryDataAsyncTask(userID,getStoryCallback).execute();
+    }
+
+    public class FetchStoryDataAsyncTask extends AsyncTask<Void, Void, ArrayList<Story>> {
+
+        String userID;
+        GetStoryCallback getStoryCallback;
+
+        FetchStoryDataAsyncTask(String userID, GetStoryCallback getStoryCallback) {
+            this.userID = userID;
+            this.getStoryCallback = getStoryCallback;
+        }
+
+        @Override
+        protected ArrayList<Story> doInBackground(Void... params) {
+            Log.i(FOOTPRINT_LOGGER, "doInBackground begins");
+            HashMap<String,String> data = new HashMap<>();
+            data.put("userID", userID);
+            Log.i(FOOTPRINT_LOGGER, "userID=" + userID);
+            ArrayList<Story> storyArrayList = new ArrayList<>();
+            try {
+                String result = sendPostRequest(FETCH_STORY_URL, data);
+                Log.i(FOOTPRINT_LOGGER, "Result : " + result);
+                if(result==null){
+                    storyArrayList = null;
+                    Log.i(FOOTPRINT_LOGGER, "JSON Object is Null : ");
+                }else{
+                    JSONArray jsonArray = new JSONArray(result);
+                    for(int i=0; i<jsonArray.length();i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Integer storyID = jsonObject.getInt("st_id");
+                        Integer locID = jsonObject.getInt("st_loc_id");
+                        String text = jsonObject.getString("st_text");
+                        int placeID = jsonObject.getInt("st_pl_id");
+                        Story story = new Story(locID,
+                                placeID,
+                                storyID,
+                                text,
+                                Integer.parseInt(userID));
+                        storyArrayList.add(story);
+                        Log.i(FOOTPRINT_LOGGER, "story : " + story.toString());
+                    }
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            if(storyArrayList==null){
+                Log.i(FOOTPRINT_LOGGER, "storyArrayList is Null : ");
+            }
+            return storyArrayList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Story> storyArrayList) {
+            progressDialog.dismiss();
+            getStoryCallback.done(storyArrayList);
+            super.onPostExecute(storyArrayList);
+        }
+    }
+
+    ////////////////////////////////FETCH STORY ENDS///////////////////////////////////////
 
 //    public String getStringImage(Bitmap bmp){
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();

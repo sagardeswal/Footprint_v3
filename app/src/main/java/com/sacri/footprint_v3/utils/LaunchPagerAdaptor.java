@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 import com.sacri.footprint_v3.fragments.FeedEventFragment;
 import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
-import com.sacri.footprint_v3.fragments.FeedPostFragment;
+import com.sacri.footprint_v3.fragments.FeedStoryFragment;
 
 /**
  * Created by Sagar Deswal on 21/09/15.
@@ -30,7 +30,7 @@ public class LaunchPagerAdaptor extends FragmentStatePagerAdapter {
             case 0:
                 // The first section of the app is the most interesting -- it offers
                 // a launchpad into the other demonstrations in this example application.
-                return new FeedPostFragment();
+                return new FeedStoryFragment();
 
             case 1:
 

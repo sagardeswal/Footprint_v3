@@ -17,15 +17,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.sacri.footprint_v3.R;
+import com.sacri.footprint_v3.callback.CameraActionCallback;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.fragments.AddPlaceFragment;
 import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 
+import java.io.File;
+
 public class AddPlaceActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,CameraActionCallback {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private PlaceDetails newPlace;
+    private File photoFile;
     /**
      * Provides the entry point to Google Play services.
      */
@@ -100,7 +104,7 @@ public class AddPlaceActivity extends AppCompatActivity implements
         // updates. Gets the best and most recent location currently available, which may be null
         // in rare cases when a location is not available.
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.i(FOOTPRINT_LOGGER,"mLastLocation" + mLastLocation.toString());
+        Log.i(FOOTPRINT_LOGGER, "mLastLocation" + mLastLocation.toString());
     }
 
     @Override
@@ -123,7 +127,7 @@ public class AddPlaceActivity extends AppCompatActivity implements
      * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
-        Log.i(FOOTPRINT_LOGGER,"buildGoogleApiClient()");
+        Log.i(FOOTPRINT_LOGGER, "buildGoogleApiClient()");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -181,13 +185,17 @@ public class AddPlaceActivity extends AppCompatActivity implements
         super.onBackPressed();
     }
 
-    public GoogleApiClient getmGoogleApiClient(){
-        Log.i(FOOTPRINT_LOGGER,"getmGoogleApiClient()");
-        return mGoogleApiClient;
-    }
-
     public Location getmLastLocation(){
         Log.i(FOOTPRINT_LOGGER,"getmLastLocation()");
         return mLastLocation;
+    }
+
+    public File getPhotoFile() {
+        return photoFile;
+    }
+
+    @Override
+    public void onPhotoCaptured(File photo) {
+        this.photoFile = photo;
     }
 }

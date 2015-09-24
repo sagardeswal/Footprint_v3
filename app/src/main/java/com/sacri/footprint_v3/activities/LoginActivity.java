@@ -1,9 +1,8 @@
 package com.sacri.footprint_v3.activities;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+
 import android.content.Intent;
-import android.content.IntentSender;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
@@ -186,8 +178,7 @@ public class LoginActivity extends AppCompatActivity
                     bnLogin.setEnabled(true);
 
                 } else {
-                    Log.i(FOOTPRINT_LOGGER, "returnedUserData: " + returnedUserDetails.getEmail());
-
+                    Log.i(FOOTPRINT_LOGGER, "returnedUserData: " + returnedUserDetails.toString());
                     logUserIn(returnedUserDetails);
                     onLoginSuccess();
                 }
@@ -340,7 +331,7 @@ public class LoginActivity extends AppCompatActivity
         userLocalStore.storeUserData(returnedUserDetails);
         userLocalStore.setUserLoggedIn(true);
         if(returnedUserDetails!=null) {
-            Log.i(FOOTPRINT_LOGGER, "returnedUserDetails=" + returnedUserDetails.getEmail());
+            Log.i(FOOTPRINT_LOGGER, "returnedUserDetails=" + returnedUserDetails.toString());
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, FeedActivity.class);
             startActivity(intent);

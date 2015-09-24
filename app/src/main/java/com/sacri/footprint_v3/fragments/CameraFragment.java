@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.hardware.Camera;
@@ -21,11 +23,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.AddPlaceActivity;
+import com.sacri.footprint_v3.callback.CameraActionCallback;
 
 
 public class CameraFragment extends Fragment {
 
+
+    private CameraActionCallback cameraActionCallback;
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 	private Camera camera;
     private File photoFile;
@@ -82,15 +86,15 @@ public class CameraFragment extends Fragment {
 
 		photoButton.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 Log.i(FOOTPRINT_LOGGER, "photoButton clicked");
-				if (camera == null){
-                    Log.i(FOOTPRINT_LOGGER,"camera is null");
+                if (camera == null) {
+                    Log.i(FOOTPRINT_LOGGER, "camera is null");
                     return;
                 }
 
-				camera.takePicture(new Camera.ShutterCallback() {
+                camera.takePicture(new Camera.ShutterCallback() {
 
                     @Override
                     public void onShutter() {
@@ -115,32 +119,37 @@ public class CameraFragment extends Fragment {
                             FileOutputStream fos = new FileOutputStream(photoFile);
                             fos.write(data);
                             fos.close();
-                            addPhotoFileToPlaceDetailsAndReturn();
+                            sendPhotoFileToCallingActivity();
                         } catch (FileNotFoundException e) {
                             Log.i(FOOTPRINT_LOGGER, "File not found: " + e.getMessage());
                         } catch (IOException e) {
                             Log.i(FOOTPRINT_LOGGER, "Error accessing file: " + e.getMessage());
-						}
-					}
+                        }
+                    }
 
-				});
-			}
-		});
+                });
+            }
+        });
 
 		return v;
 	}
 
-	private void addPhotoFileToPlaceDetailsAndReturn(){
-        Log.i(FOOTPRINT_LOGGER,"addPhotoFileToPlaceDetailsAndReturn()");
-		((AddPlaceActivity)getActivity()).getCurrentPlaceDetails().setPhotoFile(photoFile);
-		FragmentManager fm = getActivity().getFragmentManager();
-		fm.popBackStack("AddPlaceFragment",
-				FragmentManager.POP_BACK_STACK_INCLUSIVE);
-	}
+   private void sendPhotoFileToCallingActivity(){
+       Log.i(FOOTPRINT_LOGGER, "sendPhotoFileToCallingActivity()");
+       cameraActionCallback.onPhotoCaptured(photoFile);
+       FragmentManager fm = getActivity().getFragmentManager();
+       try {
+
+           fm.popBackStack();
+       }catch(Exception e){
+           e.printStackTrace();
+       }
+   }
+
 
     @Override
     public void onResume() {
-        Log.i(FOOTPRINT_LOGGER,"onResume()");
+        Log.i(FOOTPRINT_LOGGER, "onResume()");
         super.onResume();
         if (camera == null) {
             try {
@@ -164,6 +173,20 @@ public class CameraFragment extends Fragment {
             camera.release();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            cameraActionCallback = (CameraActionCallback) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
 }

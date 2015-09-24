@@ -169,7 +169,8 @@ public class AddPlaceFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        File photoFile = ((AddPlaceActivity)getActivity()).getCurrentPlaceDetails().getPhotoFile();
+        File photoFile = ((AddPlaceActivity)getActivity()).getPhotoFile();
+        newPlace.setPhotoFile(photoFile);
         if(photoFile!=null) {
             Log.i(FOOTPRINT_LOGGER,"onResume photoFile not null");
             String filePath = photoFile.getPath();
