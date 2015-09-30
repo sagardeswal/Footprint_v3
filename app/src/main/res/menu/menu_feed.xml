@@ -6,7 +6,7 @@
             android:icon="@drawable/ic_home_button"
             android:title="Home" />
         <item
-            android:id="@+id/nav_messages"
+            android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile_button"
             android:title="Profile" />
         <item
@@ -14,8 +14,8 @@
             android:icon="@drawable/ic_profile_button"
             android:title="Friends" />
         <item
-            android:id="@+id/nav_discussion"
+            android:id="@+id/nav_logout"
             android:icon="@drawable/ic_profile_button"
-            android:title="Discussion" />
+            android:title="Logout" />
     </group>
 </menu>

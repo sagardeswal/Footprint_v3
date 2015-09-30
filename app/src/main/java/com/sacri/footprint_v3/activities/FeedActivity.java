@@ -56,9 +56,11 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
     private UserDetails loggedUser;
     private DrawerLayout mDrawerLayout;
     private ViewPager viewPager;
+    private FloatingActionButton fab;
     private FeedPagerAdaptor mFeedPagerAdaptor;
     private FeedEventRecyclerAdaptor feedEventRecyclerAdaptor;
     private FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor;
+    private final Character YES = 'Y';
 
     /**
      * Provides the entry point to Google Play services.
@@ -101,17 +103,33 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
             if (viewPager != null) {
                 setupViewPager();
             }
-
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
+        if(loggedUser.getCanAddPlace()==YES){
+            Log.i(FOOTPRINT_LOGGER,"getCanAddPlace=Y");
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i(FOOTPRINT_LOGGER,"FloatingButton clicked");
+                        Intent addPlaceIntent = new Intent(view.getContext(),AddPlaceActivity.class);
+                        startActivity(addPlaceIntent);
+                    }
+                });
+            } else{
+            Log.i(FOOTPRINT_LOGGER,"getCanAddPlace=N");
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(FOOTPRINT_LOGGER,"FloatingButton clicked");
+                    Intent addEventIntent = new Intent(view.getContext(),AddEventActivity.class);
+                    startActivity(addEventIntent);
+                }
             });
+        }
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         onActivityStart();
     }
@@ -132,6 +150,14 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        if(menuItem.getTitle().equals("Logout")){
+                            UserLocalStore userLocalStore = new UserLocalStore(getBaseContext());
+                            userLocalStore.clearUserData();
+                            userLocalStore.setUserLoggedIn(false);
+                            finish();
+                            Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         return true;

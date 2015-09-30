@@ -6,8 +6,11 @@
 	$category = $_POST["pl_category"];
 	$longitude = $_POST["pl_longitude"];
 	$latitude = $_POST["pl_latitude"];
+	$adminID = intval($_POST["pl_admin_id"]);
 	
-	if(isset($title) && !empty($title) AND isset($description) && !empty($description) AND isset($category) && !empty($category) AND isset($longitude) && !empty($longitude) AND isset($latitude) && !empty($latitude)){
+	if(isset($title) && !empty($title) AND isset($description) && !empty($description) AND 
+		isset($category) && !empty($category) AND isset($longitude) && !empty($longitude) AND 
+		isset($latitude) && !empty($latitude) AND isset($adminID) && !empty($adminID)){
 		$statement = mysqli_prepare($con, "INSERT INTO pl_location_details (loc_longitude, loc_latitude) VALUES (?,?)") or die(mysql_error());
 		mysqli_stmt_bind_param($statement, "ss", $longitude, $latitude);
 		mysqli_stmt_execute($statement);
@@ -16,8 +19,8 @@
 
 		if(isset($loc_id) && !empty($loc_id))
 		{
-			$stmt = mysqli_prepare($con, "INSERT INTO fp_place_details (pl_loc_id, pl_title, pl_description, pl_category) VALUES (?,?,?,?)") or die(mysql_error());
-			mysqli_stmt_bind_param($stmt, "isss", $loc_id, $title, $description, $category);
+			$stmt = mysqli_prepare($con, "INSERT INTO fp_place_details (pl_loc_id, pl_title, pl_description, pl_category, pl_admin_id) VALUES (?,?,?,?,?)") or die(mysql_error());
+			mysqli_stmt_bind_param($stmt, "isssi", $loc_id, $title, $description, $category, $adminID);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		}

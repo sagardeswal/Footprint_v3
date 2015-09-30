@@ -72,26 +72,26 @@ public class AddPlaceActivity extends AppCompatActivity implements
         }
     }
 
-    public void replaceAddPlaceFragmentWithMapFragment(){
-        // Create a new Fragment to be placed in the activity layout
-        DisplayOnMapFragment displayOnMapFragment = new DisplayOnMapFragment();
-
-        Bundle currentLocation = new Bundle();
-        currentLocation.putDouble("latitude", mLastLocation.getLatitude());
-        currentLocation.putDouble("longitude", mLastLocation.getLongitude());
-        displayOnMapFragment.setArguments(currentLocation);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.fragmentContainer, displayOnMapFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-
-    }
+//    public void replaceAddPlaceFragmentWithMapFragment(){
+//        // Create a new Fragment to be placed in the activity layout
+//        DisplayOnMapFragment displayOnMapFragment = new DisplayOnMapFragment();
+//
+//        Bundle currentLocation = new Bundle();
+//        currentLocation.putDouble("latitude", mLastLocation.getLatitude());
+//        currentLocation.putDouble("longitude", mLastLocation.getLongitude());
+//        displayOnMapFragment.setArguments(currentLocation);
+//
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//
+//        // Replace whatever is in the fragment_container view with this fragment,
+//        // and add the transaction to the back stack so the user can navigate back
+//        transaction.replace(R.id.fragmentContainer, displayOnMapFragment);
+//        transaction.addToBackStack(null);
+//
+//        // Commit the transaction
+//        transaction.commit();
+//
+//    }
 
     /**
      * Runs when a GoogleApiClient object successfully connects.

@@ -1,6 +1,5 @@
 package com.sacri.footprint_v3.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.RegisterUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
@@ -29,7 +27,6 @@ public class SignUpActivity extends AppCompatActivity {
     private UserDetails newUser;
     private Button bnSignUp;
     private UserLocalStore userLocalStore;
-    private static final String NULL_STRING = "";
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
 
     @Override
@@ -44,9 +41,9 @@ public class SignUpActivity extends AppCompatActivity {
         etMobile = (EditText) findViewById(R.id.etMobile);
         bnSignUp = (Button) findViewById(R.id.bnSignUp);
         tvLoginLink = (TextView) findViewById(R.id.tvLoginLink);
+
         //Create new instance of UserDetails
         newUser = new UserDetails();
-
         bnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,8 +125,6 @@ public class SignUpActivity extends AppCompatActivity {
             newUser.setPaswordhashcode(password);
             etPassword.setError(null);
         }
-
-
         return valid;
     }
 
@@ -177,7 +172,6 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void logUserIn(UserDetails userDetails){

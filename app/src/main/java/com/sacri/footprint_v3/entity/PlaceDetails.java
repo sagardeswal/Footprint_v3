@@ -18,34 +18,45 @@ public class PlaceDetails {
     private File photoFile;
     private Double longitude;
     private Double latitude;
-
+    private Integer adminID;
 
 
     public PlaceDetails() {
     }
 
-    public PlaceDetails(Integer locID, Integer placeID) {
+    public PlaceDetails(Integer locID, Integer placeID, Integer adminID) {
         this.locID = locID;
         this.placeID = placeID;
+        this.adminID = adminID;
     }
 
-    public PlaceDetails(String title, String description, Integer locID, String category, Double longitude, Double latitude) {
+//    public PlaceDetails(String title, String description, Integer locID, String category, Double longitude, Double latitude, Integer adminID) {
+//        this.title = title;
+//        this.description = description;
+//        this.locID = locID;
+//        this.category = category;
+//        this.longitude = longitude;
+//        this.latitude = latitude;
+//        this.adminID = adminID;
+//    }
+
+    public PlaceDetails(Integer placeID, String title, String description, Integer locID, String category, Double longitude, Double latitude, Integer adminID) {
+        this.placeID = placeID;
         this.title = title;
         this.description = description;
         this.locID = locID;
         this.category = category;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.adminID = adminID;
     }
 
-    public PlaceDetails(Integer placeID, String title, String description, Integer locID, String category, Double longitude, Double latitude) {
-        this.placeID = placeID;
-        this.title = title;
-        this.description = description;
-        this.locID = locID;
-        this.category = category;
-        this.longitude = longitude;
-        this.latitude = latitude;
+    public Integer getAdminID() {
+        return adminID;
+    }
+
+    public void setAdminID(Integer adminID) {
+        this.adminID = adminID;
     }
 
     public Double getLatitude() {
@@ -123,11 +134,12 @@ public class PlaceDetails {
     @Override
     public String toString() {
         return "PlaceDetails{" +
-                "category='" + category + '\'' +
+                "adminID=" + adminID +
                 ", placeID=" + placeID +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", locID=" + locID +
+                ", category='" + category + '\'' +
                 ", isActive=" + isActive +
                 ", photoFile=" + photoFile +
                 ", longitude=" + longitude +
