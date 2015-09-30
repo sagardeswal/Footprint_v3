@@ -74,7 +74,7 @@ public class SignUpActivity extends AppCompatActivity {
     public void onSignupSuccess() {
         bnSignUp.setEnabled(true);
         setResult(RESULT_OK, null);
-        logUserIn(newUser);
+//        logUserIn(newUser);
         Toast.makeText(SignUpActivity.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
         finish();
     }

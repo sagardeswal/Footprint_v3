@@ -44,6 +44,7 @@ import com.sacri.footprint_v3.fragments.FeedStoryFragment;
 import com.sacri.footprint_v3.utils.FeedEventRecyclerAdaptor;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
 import com.sacri.footprint_v3.utils.FeedPlaceRecyclerAdaptor;
+import com.sacri.footprint_v3.utils.FeedStoryRecyclerAdaptor;
 import com.sacri.footprint_v3.utils.UserLocalStore;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +61,7 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
     private FeedPagerAdaptor mFeedPagerAdaptor;
     private FeedEventRecyclerAdaptor feedEventRecyclerAdaptor;
     private FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor;
+    private FeedStoryRecyclerAdaptor feedStoryRecyclerAdaptor;
     private final Character YES = 'Y';
 
     /**
@@ -398,5 +400,13 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void setFeedPlaceRecyclerAdaptor(FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor) {
         this.feedPlaceRecyclerAdaptor = feedPlaceRecyclerAdaptor;
+    }
+
+    public FeedStoryRecyclerAdaptor getFeedStoryRecyclerAdaptor() {
+        return feedStoryRecyclerAdaptor;
+    }
+
+    public void setFeedStoryRecyclerAdaptor(FeedStoryRecyclerAdaptor feedStoryRecyclerAdaptor) {
+        this.feedStoryRecyclerAdaptor = feedStoryRecyclerAdaptor;
     }
 }
