@@ -249,7 +249,7 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList.size(): " + placeDetailsArrayList.size());
                     setMPlaceDetailsArrayList(placeDetailsArrayList);
-                    feedEventRecyclerAdaptor.notifyDataSetChanged();
+//                    feedEventRecyclerAdaptor.notifyDataSetChanged();
                 }
             }
         });
@@ -275,7 +275,7 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
                     setMEventDetailsArrayList(eventDetailsArrayList);
-                    feedPlaceRecyclerAdaptor.notifyDataSetChanged();
+//                    feedPlaceRecyclerAdaptor.notifyDataSetChanged();
                 }
             }
         });
