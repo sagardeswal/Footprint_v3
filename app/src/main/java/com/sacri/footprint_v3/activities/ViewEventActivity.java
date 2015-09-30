@@ -1,18 +1,24 @@
 package com.sacri.footprint_v3.activities;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.GetEventCallback;
+import com.sacri.footprint_v3.callback.GetStoriesForEventCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
+import com.sacri.footprint_v3.entity.Story;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,52 +27,52 @@ import java.util.ArrayList;
 public class ViewEventActivity extends AppCompatActivity {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
-
-    private EditText etTitle;
-    private EditText etDescription;
-    private Switch swRepeatWeekly;
-    private EditText etStartDate;
-    private EditText etEndDate;
-    private EditText etStartTime;
-    private EditText etEndTime;
-    private EditText etAddress;
-
+    private final int REQUEST_CHECKIN_CODE = 0;
     private static EventDetails mEventDetails;
+    private static ArrayList<Story> mStoryArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
-        etTitle = (EditText) findViewById(R.id.etTitle);
-        etDescription = (EditText) findViewById(R.id.etDescription);
-        swRepeatWeekly = (Switch) findViewById(R.id.swRepeatWeekly);
-        etStartDate = (EditText) findViewById(R.id.etStartDate);
-        etEndDate = (EditText) findViewById(R.id.etEndDate);
-        etStartTime = (EditText) findViewById(R.id.etStartTime);
-        etEndTime = (EditText) findViewById(R.id.etEndTime);
-        etAddress = (EditText) findViewById(R.id.etAddress);
-        Bundle extras = getIntent().getExtras();
-        Integer eventID = 0;
-        if (extras != null) {
-            eventID = extras.getInt("ev_id");
-        }
+        Bundle eventData = getIntent().getBundleExtra("eventData");
+        Integer eventID = eventData.getInt("eventID");
+        Log.i(FOOTPRINT_LOGGER,"eventID="+eventID );
         getEventInBackground(eventID);
+        getStoriesInBackground(eventID);
     }
 
     private void displayEventDetails(){
 
-        etTitle.setText(mEventDetails.getEventTitle());
-        etDescription.setText(mEventDetails.getEventDescription());
-        swRepeatWeekly.setChecked(mEventDetails.getRepeatedWeekly());
-        DateFormat startDateFormat = new SimpleDateFormat("dd MM yyyy");
-        String startDate = startDateFormat.format(mEventDetails.getStartDate());
-        etStartDate.setText(startDate);
-        DateFormat endDateFormat = new SimpleDateFormat("dd MM yyyy");
-        String endDate = startDateFormat.format(mEventDetails.getEndDate());
-        etEndDate.setText(endDate);
-        etStartTime.setText(mEventDetails.getStartTimeHour() + " : " + mEventDetails.getStartTimeMinutes() + "Hrs");
-        etEndTime.setText(mEventDetails.getEndTimeHour() + " : " + mEventDetails.getEndTimeMinutes() + "Hrs");
-        etAddress.setText(mEventDetails.getAddress());
+        TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
+        tvTitle.setText(mEventDetails.getEventTitle());
+        TextView tvDescription = (TextView) findViewById(R.id.tvDescription);
+        tvDescription.setText(mEventDetails.getEventDescription());
+        TextView tvStartDate = (TextView) findViewById(R.id.tvStartDate);
+        tvStartDate.setText(mEventDetails.getStartDate().toString());
+        TextView tvAddress = (TextView) findViewById(R.id.tvAddress);
+        tvAddress.setText(mEventDetails.getAddress());
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent checkinIntent = new Intent(ViewEventActivity.this,CheckInActivity.class);
+                Bundle data = new Bundle();
+                data.putInt("placeID", mEventDetails.getPlaceID());
+                data.putInt("eventID", mEventDetails.getEventID());
+                data.putInt("locID", mEventDetails.getLocID());
+                checkinIntent.putExtras(data);
+//                Bundle placeData = getIntent().getBundleExtra("placeData");
+//                checkinIntent.putExtra("placeData",placeData);
+                startActivityForResult(checkinIntent, REQUEST_CHECKIN_CODE);
+            }
+        });
+    }
+
+    private void displayStories(){
+        Log.i(FOOTPRINT_LOGGER,"Stories:" + mStoryArrayList.toString());
+
     }
 
     @Override
@@ -117,9 +123,30 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     public void setMEventDetailsArrayList(ArrayList<EventDetails> eventDetailsArrayList){
+        Log.i(FOOTPRINT_LOGGER,"eventDetailsArrayList" + eventDetailsArrayList.toString());
         mEventDetails = eventDetailsArrayList.get(0);
     }
 
+    private void getStoriesInBackground(Integer eventID){
+        ServerRequests serverRequests = new ServerRequests(this);
+        serverRequests.fetchStoryForEventDataInBackground(eventID.toString(),new GetStoriesForEventCallback() {
+            @Override
+            public void done(ArrayList<Story> storyArrayList) {
+
+                if (storyArrayList == null) {
+                    Log.i(FOOTPRINT_LOGGER, "storyArrayList is null");
+                    showErrorMessage();
+                } else{
+                    setmStoryArrayList(storyArrayList);
+                    displayStories();
+                }
+            }
+        });
+    }
+
+    public static void setmStoryArrayList(ArrayList<Story> mStoryArrayList) {
+        ViewEventActivity.mStoryArrayList = mStoryArrayList;
+    }
 
     private void showErrorMessage(){
         Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");

@@ -42,14 +42,17 @@ public class FeedStoryFragment extends Fragment {
 
         if (storyArrayList == null) {
             Log.i(FOOTPRINT_LOGGER, "storyArrayList is null");
-            showErrorMessage();
-
         } else {
             Log.i(FOOTPRINT_LOGGER, "storyArrayList size: " + storyArrayList.size());
             setListAdaptor();
         }
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
 

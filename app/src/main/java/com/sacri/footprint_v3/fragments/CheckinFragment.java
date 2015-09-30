@@ -81,8 +81,9 @@ public class CheckinFragment extends Fragment {
                 if(etText!=null && etText.getText()!=null && !etText.getText().toString().isEmpty()) {
                     newStory.setText(etText.getText().toString());
                     newStory.setUserID(loggedUser.getUserID());
-                    newStory.setPlaceID(((CheckInActivity) getActivity()).getPlaceDetails().getPlaceID());
-                    newStory.setLocID(((CheckInActivity)getActivity()).getPlaceDetails().getLocID());
+                    newStory.setPlaceID(((CheckInActivity) getActivity()).getPlaceID());
+                    newStory.setLocID(((CheckInActivity) getActivity()).getLocID());
+                    newStory.setEventID(((CheckInActivity)getActivity()).getEventID());
                     storeCheckIn(newStory);
                 }
             }

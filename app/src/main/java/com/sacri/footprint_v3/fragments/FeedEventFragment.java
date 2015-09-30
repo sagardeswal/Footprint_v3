@@ -1,31 +1,27 @@
 package com.sacri.footprint_v3.fragments;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.activities.FeedActivity;
-import com.sacri.footprint_v3.activities.ViewEventActivity;
 import com.sacri.footprint_v3.entity.EventDetails;
-import com.sacri.footprint_v3.utils.FeedEventAdaptor;
+import com.sacri.footprint_v3.utils.FeedEventRecyclerAdaptor;
 
 import java.util.ArrayList;
 
-
+/**
+ * Created by Sagar Deswal
+ */
 public class FeedEventFragment extends Fragment {
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
-    private ListAdapter feedEventAdaptor;
-    private View v;
+    private RecyclerView rv;
+    private ArrayList<EventDetails> eventDetailsArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,49 +33,24 @@ public class FeedEventFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_feed_event, container, false);
+        rv = (RecyclerView)inflater.inflate(R.layout.fragment_feed_event, container, false);
 
-        ArrayList<EventDetails> eventDetailsArrayList =((FeedActivity) getActivity()).getMEventDetailsArrayList();
+        eventDetailsArrayList =((FeedActivity) getActivity()).getMEventDetailsArrayList();
 
         if (eventDetailsArrayList == null) {
             Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is null");
-            showErrorMessage();
 
         } else {
             Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
-            setListAdaptor(eventDetailsArrayList);
+            setupRecyclerView(rv);
         }
-
-
-        return v;
+        return rv;
     }
 
-
-    private void setListAdaptor(ArrayList<EventDetails> eventDetailsArrayList ){
-        feedEventAdaptor = new FeedEventAdaptor(getActivity(), eventDetailsArrayList);
-        ListView contentList = (ListView) v.findViewById(R.id.lvEvents);
-        contentList.setAdapter(feedEventAdaptor);
-
-        contentList.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        String eventTitle = String.valueOf(parent.getItemAtPosition(position));
-//                        Toast.makeText(getActivity(), eventTitle, Toast.LENGTH_LONG).show();
-                        Integer eventID = Integer.valueOf(((EventDetails)parent.getItemAtPosition(position)).getEventID());
-                        Intent viewEventIntent = new Intent(getActivity(), ViewEventActivity.class);
-                        viewEventIntent.putExtra("ev_id", eventID);
-                        startActivity(viewEventIntent);
-                    }
-                }
-        );
-    }
-
-    private void showErrorMessage(){
-        Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        dialogBuilder.setMessage("No Events Found");
-        dialogBuilder.setPositiveButton("Ok", null);
-        dialogBuilder.show();
+    private void setupRecyclerView(RecyclerView recyclerView ) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        FeedEventRecyclerAdaptor feedEventRecyclerAdaptor = new FeedEventRecyclerAdaptor(getActivity(), eventDetailsArrayList);
+        ((FeedActivity)getActivity()).setFeedEventRecyclerAdaptor(feedEventRecyclerAdaptor);
+        recyclerView.setAdapter(feedEventRecyclerAdaptor);
     }
 }

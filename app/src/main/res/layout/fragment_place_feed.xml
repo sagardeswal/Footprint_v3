@@ -1,18 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.sacri.footprint_v3.fragments.FeedPlaceFragment">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="left|top">
-
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/lvPlaces"/>
-    </LinearLayout>
-</FrameLayout>
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recyclerview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

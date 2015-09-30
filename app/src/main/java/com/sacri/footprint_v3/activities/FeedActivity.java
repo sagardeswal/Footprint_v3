@@ -8,13 +8,23 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.widget.TextView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -27,17 +37,29 @@ import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.entity.Story;
 import com.sacri.footprint_v3.entity.UserDetails;
+import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
+import com.sacri.footprint_v3.fragments.FeedEventFragment;
+import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
+import com.sacri.footprint_v3.fragments.FeedStoryFragment;
+import com.sacri.footprint_v3.utils.FeedEventRecyclerAdaptor;
 import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
+import com.sacri.footprint_v3.utils.FeedPlaceRecyclerAdaptor;
 import com.sacri.footprint_v3.utils.UserLocalStore;
-
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class FeedActivity extends AppCompatActivity implements ActionBar.TabListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+
+public class FeedActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
-    private ViewPager feedPager;
-    private UserLocalStore userLocalStore;
     private UserDetails loggedUser;
+    private DrawerLayout mDrawerLayout;
+    private ViewPager viewPager;
+    private FeedPagerAdaptor mFeedPagerAdaptor;
+    private FeedEventRecyclerAdaptor feedEventRecyclerAdaptor;
+    private FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor;
+
     /**
      * Provides the entry point to Google Play services.
      */
@@ -47,132 +69,91 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
      * Represents a geographical location.
      */
     protected Location mLastLocation;
-    public static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
-    public static ArrayList<EventDetails> mEventDetailsArrayList;
-    public static ArrayList<Story> mStoryArrayList;
+    private static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
+    private static ArrayList<EventDetails> mEventDetailsArrayList;
+    private static ArrayList<Story> mStoryArrayList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
-        userLocalStore = new UserLocalStore(this);
+        UserLocalStore userLocalStore = new UserLocalStore(this);
         loggedUser = userLocalStore.getLoggedInUser();
         Log.i(FOOTPRINT_LOGGER, "Logged In User:" + loggedUser.toString());
         isNetworkAndGPSAvailable();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            final ActionBar ab = getSupportActionBar();
+            assert ab != null;
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            if (navigationView != null) {
+                setupDrawerContent(navigationView);
+            }
+
+            viewPager = (ViewPager) findViewById(R.id.pager);
+            if (viewPager != null) {
+                setupViewPager();
+            }
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+            });
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        onActivityStart();
+    }
+
+    private void setupViewPager() {
+        mFeedPagerAdaptor = new FeedPagerAdaptor(getSupportFragmentManager());
+        mFeedPagerAdaptor.addFragment(new FeedStoryFragment(), "Stories");
+        mFeedPagerAdaptor.addFragment(new FeedPlaceFragment(), "Places");
+        mFeedPagerAdaptor.addFragment(new FeedEventFragment(), "Events");
+        mFeedPagerAdaptor.addFragment(new DisplayOnMapFragment(), "Map");
+        viewPager.setAdapter(mFeedPagerAdaptor);
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        TextView tvUsername = (TextView) navigationView.findViewById(R.id.tvUsername);
+        tvUsername.setText(loggedUser.getFullname());
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
     }
 
     private void onActivityStart(){
 
-            buildGoogleApiClient();
-            getPlacesInBackground();
-            getEventsInBackground();
-            getStoryDataInBackground();
+        buildGoogleApiClient();
 
-    }
+        getPlacesInBackground();
+        getStoryDataInBackground();
 
-    private void displayFeedPager(){
-        final ActionBar actionBar = getSupportActionBar();
-        // Specify that the Home/Up button should not be enabled, since there is no hierarchical
-        // parent.
-        assert actionBar != null;
-        actionBar.setHomeButtonEnabled(false);
-        // ViewPager and its adapters use support library
-        // fragments, so use getSupportFragmentManager.
-        FeedPagerAdaptor mFeedPagerAdaptor = new FeedPagerAdaptor(getSupportFragmentManager());
-        feedPager = (ViewPager) findViewById(R.id.pager);
-        feedPager.setAdapter(mFeedPagerAdaptor);
-
-        // Specify that tabs should be displayed in the action bar.
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        feedPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                // When swiping between different app sections, select the corresponding tab.
-                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
-                // Tab.
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mFeedPagerAdaptor.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by the adapter.
-            // Also specify this Activity object, which implements the TabListener interface, as the
-            // listener for when this tab is selected.
-            String pageTitle;
-            switch(i){
-                case 0: pageTitle = "Feed";
-                    break;
-                case 1: pageTitle = "Places";
-                    break;
-                case 2: pageTitle = "Events";
-                    break;
-                case 3: pageTitle = "Map";
-                    break;
-                default:pageTitle = "Home";
-            }
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(pageTitle)
-                            .setTabListener(this));
-        }
-
+        getEventsInBackground();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_feed, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        switch(id){
-
-            case R.id.action_settings : return true;
-            case R.id.mnAddEvent:
-                Intent intentAddEvent = new Intent(FeedActivity.this,AddEventActivity.class);
-                startActivity(intentAddEvent);
-                return true;
-            case R.id.mnAddPlace:
-                Intent intentAddPlace = new Intent(FeedActivity.this,AddPlaceActivity.class);
-                startActivity(intentAddPlace);
-                return true;
-            case R.id.mnLogout:
-                UserLocalStore userLocalStore = new UserLocalStore(this);
-                userLocalStore.clearUserData();
-                userLocalStore.setUserLoggedIn(false);
-                finish();
-                Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
-                startActivity(intent);
-                return true;
-            default:return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
-
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
-        feedPager.setCurrentItem(tab.getPosition());
-
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
-
     }
 
     @Override
@@ -231,14 +212,13 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     @Override
     protected void onResume() {
         super.onResume();
-//        isNetworkAndGPSAvailable();
+        mFeedPagerAdaptor.notifyDataSetChanged();
     }
 
     @Override
     protected void onStart() {
         Log.i(FOOTPRINT_LOGGER, "FeedActivity onStart()");
         super.onStart();
-//        isNetworkAndGPSAvailable();
         if(mGoogleApiClient!=null)
             mGoogleApiClient.connect();
     }
@@ -253,7 +233,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
     public Location getmLastLocation() {
-        Log.i(FOOTPRINT_LOGGER,"getmLastLocation()");
+        Log.i(FOOTPRINT_LOGGER, "getmLastLocation()");
         return mLastLocation;
     }
 
@@ -265,16 +245,12 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
                 if (placeDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
-                    showErrorMessage("No Places Found.");
 
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList.size(): " + placeDetailsArrayList.size());
                     setMPlaceDetailsArrayList(placeDetailsArrayList);
+                    feedEventRecyclerAdaptor.notifyDataSetChanged();
                 }
-                /*
-                Placed in getPlacesInBackground thread so that data is available before the view is drawn
-                 */
-                displayFeedPager();
             }
         });
     }
@@ -289,17 +265,17 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
     private void getEventsInBackground(){
         ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchEventDataInBackground("-1",new GetEventCallback() {
+        serverRequests.fetchEventDataInBackground("-1", new GetEventCallback() {
             @Override
             public void done(ArrayList<EventDetails> eventDetailsArrayList) {
 
                 if (eventDetailsArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is null");
-                    showErrorMessage("No Events Found.");
 
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
                     setMEventDetailsArrayList(eventDetailsArrayList);
+                    feedPlaceRecyclerAdaptor.notifyDataSetChanged();
                 }
             }
         });
@@ -314,7 +290,7 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
-    private void getStoryDataInBackground(){
+    private void getStoryDataInBackground() {
         ServerRequests serverRequests = new ServerRequests(this);
         serverRequests.fetchStoryDataInBackground(loggedUser.getUserID().toString(), new GetStoryCallback() {
             @Override
@@ -322,7 +298,6 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
                 if (storyArrayList == null) {
                     Log.i(FOOTPRINT_LOGGER, "storyArrayList is null");
-                    showErrorMessage("No Stories Found.");
 
                 } else {
                     Log.i(FOOTPRINT_LOGGER, "storyArrayList.size(): " + storyArrayList.size());
@@ -336,17 +311,10 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
         return mStoryArrayList;
     }
 
-    public static void setmStoryArrayList(ArrayList<Story> mStoryArrayList) {
-        FeedActivity.mStoryArrayList = mStoryArrayList;
+    public static void setmStoryArrayList(ArrayList<Story> storyArrayList) {
+        mStoryArrayList = storyArrayList;
     }
 
-    private void showErrorMessage(String message){
-        Log.i(FOOTPRINT_LOGGER, "showErrorMessage()");
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage(message);
-        dialogBuilder.setPositiveButton("Ok", null);
-        dialogBuilder.show();
-    }
 
     private void isNetworkAndGPSAvailable(){
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -355,11 +323,15 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
 
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
 
         try {
             network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
 
         if(!gps_enabled && !network_enabled) {
             // notify user
@@ -368,7 +340,6 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
             dialog.setPositiveButton(this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
                     Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(myIntent);
                     //get gps
@@ -385,9 +356,21 @@ public class FeedActivity extends AppCompatActivity implements ActionBar.TabList
             });
             dialog.show();
         }
-        else{
-            onActivityStart();
-        }
     }
 
+    public FeedEventRecyclerAdaptor getFeedEventRecyclerAdaptor() {
+        return feedEventRecyclerAdaptor;
+    }
+
+    public void setFeedEventRecyclerAdaptor(FeedEventRecyclerAdaptor feedEventRecyclerAdaptor) {
+        this.feedEventRecyclerAdaptor = feedEventRecyclerAdaptor;
+    }
+
+    public FeedPlaceRecyclerAdaptor getFeedPlaceRecyclerAdaptor() {
+        return feedPlaceRecyclerAdaptor;
+    }
+
+    public void setFeedPlaceRecyclerAdaptor(FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor) {
+        this.feedPlaceRecyclerAdaptor = feedPlaceRecyclerAdaptor;
+    }
 }

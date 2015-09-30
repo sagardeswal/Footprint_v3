@@ -8,6 +8,8 @@ import java.util.Date;
 public class EventDetails {
 
     private Integer eventID;
+    private Integer placeID;
+    private Integer locID;
     private String eventTitle;
     private String eventDescription;
     private Boolean repeatedWeekly;
@@ -24,8 +26,10 @@ public class EventDetails {
     public EventDetails() {
     }
 
-    public EventDetails(Integer eventID, String eventTitle, String eventDescription, Boolean repeatedWeekly, Date startDate, Date endDate, Integer startTimeHour, Integer startTimeMinutes, Integer endTimeHour, Integer endTimeMinutes, Double longitude, Double latitude, String address) {
+    public EventDetails(Integer eventID, Integer placeID, Integer locID, String eventTitle, String eventDescription, Boolean repeatedWeekly, Date startDate, Date endDate, Integer startTimeHour, Integer startTimeMinutes, Integer endTimeHour, Integer endTimeMinutes, Double longitude, Double latitude, String address) {
         this.eventID = eventID;
+        this.placeID = placeID;
+        this.locID = locID;
         this.address = address;
         this.endDate = endDate;
         this.endTimeHour = endTimeHour;
@@ -38,6 +42,22 @@ public class EventDetails {
         this.startDate = startDate;
         this.startTimeHour = startTimeHour;
         this.startTimeMinutes = startTimeMinutes;
+    }
+
+    public Integer getLocID() {
+        return locID;
+    }
+
+    public void setLocID(Integer locID) {
+        this.locID = locID;
+    }
+
+    public Integer getPlaceID() {
+        return placeID;
+    }
+
+    public void setPlaceID(Integer placeID) {
+        this.placeID = placeID;
     }
 
     public String getAddress() {
@@ -149,6 +169,8 @@ public class EventDetails {
         return "EventDetails{" +
                 "address='" + address + '\'' +
                 ", eventID=" + eventID +
+                ", placeID=" + placeID +
+                ", locID=" + locID +
                 ", eventTitle='" + eventTitle + '\'' +
                 ", eventDescription='" + eventDescription + '\'' +
                 ", repeatedWeekly=" + repeatedWeekly +

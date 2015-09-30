@@ -30,6 +30,7 @@ public class Story {
         this.userID = userID;
     }
 
+
     public HashMap<Integer, Comment> getComments() {
         return comments;
     }

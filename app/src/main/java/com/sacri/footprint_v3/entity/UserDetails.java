@@ -10,6 +10,7 @@ public class UserDetails {
     private String fullname;
     private String mobile;
     private String email;
+    private String role;
     private String paswordhashcode;
 
     public UserDetails() {
@@ -33,12 +34,29 @@ public class UserDetails {
         this.userID = userID;
     }
 
+    public UserDetails(String email, String fullname, String mobile, String paswordhashcode, String role, Integer userID) {
+        this.email = email;
+        this.fullname = fullname;
+        this.mobile = mobile;
+        this.paswordhashcode = paswordhashcode;
+        this.role = role;
+        this.userID = userID;
+    }
+
     public String getPaswordhashcode() {
         return paswordhashcode;
     }
 
     public void setPaswordhashcode(String paswordhashcode) {
         this.paswordhashcode = paswordhashcode;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getEmail() {
@@ -81,7 +99,9 @@ public class UserDetails {
                 ", userID=" + userID +
                 ", fullname='" + fullname + '\'' +
                 ", mobile='" + mobile + '\'' +
+                ", role='" + role + '\'' +
                 ", paswordhashcode='" + paswordhashcode + '\'' +
                 '}';
     }
+
 }

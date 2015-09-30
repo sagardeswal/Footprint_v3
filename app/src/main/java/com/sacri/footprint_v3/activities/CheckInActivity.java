@@ -23,15 +23,21 @@ public class CheckInActivity extends AppCompatActivity implements CameraActionCa
 
 
     private File photoFile;
-    private PlaceDetails placeDetails;
+    private Integer placeID;
+    private Integer eventID;
+    private Integer locID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
-        Bundle placeData = getIntent().getBundleExtra("placeData");
-        placeDetails = new PlaceDetails(placeData.getInt("placeLocID"),placeData.getInt("placeID"));
+        placeID = getIntent().getIntExtra("placeID", -1);
+        eventID = getIntent().getIntExtra("eventID", -1);
+        locID = getIntent().getIntExtra("locID", -1);
+//        Bundle placeData = getIntent().getBundleExtra("placeData");
+//        placeDetails = new PlaceDetails(placeData.getInt("placeLocID"),placeData.getInt("placeID"));
         if (findViewById(R.id.fragmentContainer) != null) {
 
             // However, if we're being restored from a previous state,
@@ -113,8 +119,16 @@ public class CheckInActivity extends AppCompatActivity implements CameraActionCa
         return photoFile;
     }
 
-    public PlaceDetails getPlaceDetails() {
-        return placeDetails;
+    public Integer getEventID() {
+        return eventID;
+    }
+
+    public Integer getPlaceID() {
+        return placeID;
+    }
+
+    public Integer getLocID() {
+        return locID;
     }
 
     @Override

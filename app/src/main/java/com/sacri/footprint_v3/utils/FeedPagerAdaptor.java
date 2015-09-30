@@ -3,51 +3,42 @@ package com.sacri.footprint_v3.utils;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 import com.sacri.footprint_v3.fragments.FeedEventFragment;
 import com.sacri.footprint_v3.fragments.FeedStoryFragment;
 import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class FeedPagerAdaptor extends FragmentPagerAdapter {
+    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<String> mFragmentTitles = new ArrayList<>();
+    private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
+
     public FeedPagerAdaptor(FragmentManager fm) {
         super(fm);
     }
 
-    @Override
-    public Fragment getItem(int i) {
-        switch (i) {
-            case 0:
-                // The first section of the app is the most interesting -- it offers
-                // a launchpad into the other demonstrations in this example application.
-                return new FeedStoryFragment();
-
-            case 1:
-
-                return new FeedPlaceFragment();
-
-            case 2:
-
-                return new FeedEventFragment();
-
-            case 3:
-
-//                return new FeedEventFragment();
-                return new DisplayOnMapFragment();
-
-            default:
-                return null;
-        }
+    public void addFragment(Fragment fragment, String title) {
+        Log.i(FOOTPRINT_LOGGER, "Fragment Tag=" + fragment.getTag());
+        mFragments.add(fragment);
+        mFragmentTitles.add(title);
     }
 
     @Override
+    public Fragment getItem(int position) { return mFragments.get(position);}
+
+    @Override
     public int getCount() {
-        return 4;
+        return mFragments.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return super.getPageTitle(position);
+        return mFragmentTitles.get(position);
     }
 }

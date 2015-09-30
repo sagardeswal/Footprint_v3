@@ -1,13 +1,21 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.sacri.footprint_v3.activities.FeedActivity">
-    <item android:id="@+id/mnAddEvent" android:title="@string/add_event_menu_item_label_text"
-        android:orderInCategory="1" app:showAsAction="never" />
-    <item android:id="@+id/mnAddPlace" android:title="@string/add_place_menu_item_lable_text"
-        android:orderInCategory="2" app:showAsAction="never" />
-    <item android:id="@+id/mnLogout" android:title="@string/logout_menu_item_label_text"
-        android:orderInCategory="3" app:showAsAction="never" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="4" app:showAsAction="never" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_button"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_messages"
+            android:icon="@drawable/ic_profile_button"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/ic_profile_button"
+            android:title="Friends" />
+        <item
+            android:id="@+id/nav_discussion"
+            android:icon="@drawable/ic_profile_button"
+            android:title="Discussion" />
+    </group>
 </menu>
