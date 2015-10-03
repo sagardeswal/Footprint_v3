@@ -1,8 +1,13 @@
 package com.sacri.footprint_v3.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Sagar Deswal on 12/09/15.
@@ -20,7 +25,6 @@ public class PlaceDetails {
     private Double latitude;
     private Integer adminID;
 
-
     public PlaceDetails() {
     }
 
@@ -29,16 +33,6 @@ public class PlaceDetails {
         this.placeID = placeID;
         this.adminID = adminID;
     }
-
-//    public PlaceDetails(String title, String description, Integer locID, String category, Double longitude, Double latitude, Integer adminID) {
-//        this.title = title;
-//        this.description = description;
-//        this.locID = locID;
-//        this.category = category;
-//        this.longitude = longitude;
-//        this.latitude = latitude;
-//        this.adminID = adminID;
-//    }
 
     public PlaceDetails(Integer placeID, String title, String description, Integer locID, String category, Double longitude, Double latitude, Integer adminID) {
         this.placeID = placeID;

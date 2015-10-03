@@ -67,12 +67,12 @@ public class DisplayOnMapFragment extends Fragment {
             latLng = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
         }
         try {
-            ArrayList<PlaceDetails> placeDetailsArrayList = ((FeedActivity) getActivity()).getMPlaceDetailsArrayList();
+            ArrayList<PlaceDetails> placeDetailsArrayList = ((FeedActivity) getActivity()).getmPlaceDetailsArrayList();
             if (placeDetailsArrayList == null) {
                 Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
                 showErrorMessage();
             } else {
-                Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.get(0).getTitle());
+                Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList: " + placeDetailsArrayList.toString());
                 drawPlaceMarkersOnMap(placeDetailsArrayList);
             }
         }catch(Exception e){
@@ -80,7 +80,7 @@ public class DisplayOnMapFragment extends Fragment {
         }
 
         try{
-            ArrayList<EventDetails> eventDetailsArrayList = ((FeedActivity) getActivity()).getMEventDetailsArrayList();
+            ArrayList<EventDetails> eventDetailsArrayList = ((FeedActivity) getActivity()).getmEventDetailsArrayList();
             if(eventDetailsArrayList==null) {
                 Log.i(FOOTPRINT_LOGGER,"eventDetailsArrayList is null");
             }

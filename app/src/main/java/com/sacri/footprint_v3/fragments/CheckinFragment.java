@@ -25,7 +25,7 @@ import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.Photo;
 import com.sacri.footprint_v3.entity.Story;
 import com.sacri.footprint_v3.entity.UserDetails;
-import com.sacri.footprint_v3.utils.UserLocalStore;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.util.Log;

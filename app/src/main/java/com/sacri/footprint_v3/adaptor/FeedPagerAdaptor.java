@@ -1,14 +1,9 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
-
-import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
-import com.sacri.footprint_v3.fragments.FeedEventFragment;
-import com.sacri.footprint_v3.fragments.FeedStoryFragment;
-import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 
 import java.util.ArrayList;
 import java.util.List;

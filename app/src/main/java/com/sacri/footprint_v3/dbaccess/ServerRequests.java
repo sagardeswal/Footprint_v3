@@ -15,14 +15,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.FeedActivity;
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.callback.AddStoryCallback;

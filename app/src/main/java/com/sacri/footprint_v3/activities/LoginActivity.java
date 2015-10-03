@@ -17,7 +17,7 @@ import com.sacri.footprint_v3.R;
 import com.sacri.footprint_v3.callback.LoginUserCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.UserDetails;
-import com.sacri.footprint_v3.utils.UserLocalStore;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
 
 public class LoginActivity extends AppCompatActivity
 //        implements

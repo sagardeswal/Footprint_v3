@@ -1,7 +1,6 @@
 package com.sacri.footprint_v3.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +33,7 @@ import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
 import com.sacri.footprint_v3.entity.UserDetails;
-import com.sacri.footprint_v3.utils.UserLocalStore;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
 
 import java.io.File;
 

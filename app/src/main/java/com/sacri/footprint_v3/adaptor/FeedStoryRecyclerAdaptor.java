@@ -1,4 +1,4 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,19 +13,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.ViewEventActivity;
-import com.sacri.footprint_v3.entity.EventDetails;
+import com.sacri.footprint_v3.activities.ViewStoryActivity;
+import com.sacri.footprint_v3.entity.Story;
 
 import java.util.ArrayList;
 
 /**
- * Created by Sagar Deswal on 29/09/2015
+ * Created by Sagar Deswal on 30/09/15.
  */
-public class FeedEventRecyclerAdaptor extends RecyclerView.Adapter<FeedEventRecyclerAdaptor.ViewHolder> {
+public class FeedStoryRecyclerAdaptor extends RecyclerView.Adapter<FeedStoryRecyclerAdaptor.ViewHolder> {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private int mBackground;
-    private ArrayList<EventDetails> mValues;
+    private ArrayList<Story> mValues;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
@@ -52,44 +52,44 @@ public class FeedEventRecyclerAdaptor extends RecyclerView.Adapter<FeedEventRecy
 //        return mValues.get(position).getTitle();
 //    }
 
-    public FeedEventRecyclerAdaptor(Context context, ArrayList<EventDetails> eventDetailsArrayList) {
-        Log.i(FOOTPRINT_LOGGER,"FeedEventRecyclerAdaptor()");
+    public FeedStoryRecyclerAdaptor(Context context, ArrayList<Story> storyArrayList) {
         TypedValue mTypedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mBackground = mTypedValue.resourceId;
-        mValues = eventDetailsArrayList;
-        Log.i(FOOTPRINT_LOGGER,"mValues=" + eventDetailsArrayList.size());
+        mValues = storyArrayList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_event_feed, parent, false);
+                .inflate(R.layout.row_story_feed, parent, false);
         view.setBackgroundResource(mBackground);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mBoundString = mValues.get(position).getEventTitle();
-        holder.tvTitle.setText(mValues.get(position).getEventTitle());
-
+        holder.mBoundString = mValues.get(position).getText();
+        holder.tvTitle.setText(mValues.get(position).getText());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(FOOTPRINT_LOGGER,"holder.mView.setOnClickListener()");
-                EventDetails selectedEvent = mValues.get(position);
+                Story selectedStory = mValues.get(position);
                 Context context = v.getContext();
-                Intent viewEventIntent = new Intent(context, ViewEventActivity.class);
-                Bundle eventData = new Bundle();
-                Log.i(FOOTPRINT_LOGGER, "eventID=" + selectedEvent.getEventID());
-                eventData.putInt("eventID", selectedEvent.getEventID());
-                Log.i(FOOTPRINT_LOGGER, "eventTitle=" + selectedEvent.getEventTitle());
-                eventData.putString("eventTitle", selectedEvent.getEventTitle());
-                Log.i(FOOTPRINT_LOGGER, "eventDescription=" + selectedEvent.getEventDescription());
-                eventData.putString("eventDescription", selectedEvent.getEventDescription());
-                viewEventIntent.putExtra("eventData", eventData);
-                context.startActivity(viewEventIntent);
+                Intent viewPlaceIntent = new Intent(context, ViewStoryActivity.class);
+                Bundle storyData = new Bundle();
+                Log.i(FOOTPRINT_LOGGER, "storyID=" + selectedStory.getStoryID());
+                storyData.putInt("storyID", selectedStory.getStoryID());
+                Log.i(FOOTPRINT_LOGGER, "storyText=" + selectedStory.getText());
+                storyData.putString("storyText", selectedStory.getText());
+                Log.i(FOOTPRINT_LOGGER, "storyLocID=" + selectedStory.getLocID());
+                storyData.putInt("storyLocID", selectedStory.getLocID());
+                Log.i(FOOTPRINT_LOGGER, "StoryPlaceID=" + selectedStory.getPlaceID());
+                storyData.putInt("StoryPlaceID", selectedStory.getPlaceID());
+                Log.i(FOOTPRINT_LOGGER, "StoryEventID=" + selectedStory.getEventID());
+                storyData.putInt("StoryEventID", selectedStory.getEventID());
+                viewPlaceIntent.putExtra("storyData", storyData);
+                context.startActivity(viewPlaceIntent);
             }
         });
 
@@ -99,4 +99,9 @@ public class FeedEventRecyclerAdaptor extends RecyclerView.Adapter<FeedEventRecy
     public int getItemCount() {
         return mValues.size();
     }
+
+    public void setmValues(ArrayList<Story> mValues) {
+        this.mValues = mValues;
+    }
 }
+

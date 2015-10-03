@@ -1,9 +1,8 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.sacri.footprint_v3.entity.UserDetails;
 
 /**
