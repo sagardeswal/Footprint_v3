@@ -1,4 +1,4 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,19 +13,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.ViewPlaceProfileActivity;
-import com.sacri.footprint_v3.entity.PlaceDetails;
+import com.sacri.footprint_v3.activities.ViewStoryActivity;
+import com.sacri.footprint_v3.entity.Story;
 
 import java.util.ArrayList;
 
-/*
-    Created by Sagar Deswal on 27/09/15.
+/**
+ * Created by Sagar Deswal on 30/09/15.
  */
-public class FeedPlaceRecyclerAdaptor extends RecyclerView.Adapter<FeedPlaceRecyclerAdaptor.ViewHolder> {
+public class FeedStoryRecyclerAdaptor extends RecyclerView.Adapter<FeedStoryRecyclerAdaptor.ViewHolder> {
 
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private int mBackground;
-    private ArrayList<PlaceDetails> mValues;
+    private ArrayList<Story> mValues;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
@@ -52,43 +52,43 @@ public class FeedPlaceRecyclerAdaptor extends RecyclerView.Adapter<FeedPlaceRecy
 //        return mValues.get(position).getTitle();
 //    }
 
-    public FeedPlaceRecyclerAdaptor(Context context, ArrayList<PlaceDetails> placeDetailsArrayList) {
+    public FeedStoryRecyclerAdaptor(Context context, ArrayList<Story> storyArrayList) {
         TypedValue mTypedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mBackground = mTypedValue.resourceId;
-        mValues = placeDetailsArrayList;
+        mValues = storyArrayList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_place_feed, parent, false);
+                .inflate(R.layout.row_story_feed, parent, false);
         view.setBackgroundResource(mBackground);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mBoundString = mValues.get(position).getTitle();
-        holder.tvTitle.setText(mValues.get(position).getTitle());
+        holder.mBoundString = mValues.get(position).getText();
+        holder.tvTitle.setText(mValues.get(position).getText());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlaceDetails selectedPlace = mValues.get(position);
+                Story selectedStory = mValues.get(position);
                 Context context = v.getContext();
-                Intent viewPlaceIntent = new Intent(context, ViewPlaceProfileActivity.class);
-                Bundle placeData = new Bundle();
-                Log.i(FOOTPRINT_LOGGER, "placeID=" + selectedPlace.getPlaceID());
-                placeData.putInt("placeID", selectedPlace.getPlaceID());
-                Log.i(FOOTPRINT_LOGGER, "placeTitle=" + selectedPlace.getTitle());
-                placeData.putString("placeTitle", selectedPlace.getTitle());
-                Log.i(FOOTPRINT_LOGGER, "placeLocID=" + selectedPlace.getLocID());
-                placeData.putInt("placeLocID", selectedPlace.getLocID());
-                Log.i(FOOTPRINT_LOGGER, "placeDescription=" + selectedPlace.getDescription());
-                placeData.putString("placeDescription", selectedPlace.getDescription());
-                Log.i(FOOTPRINT_LOGGER, "placeCategory=" + selectedPlace.getCategory());
-                placeData.putString("placeCategory", selectedPlace.getCategory());
-                viewPlaceIntent.putExtra("placeData", placeData);
+                Intent viewPlaceIntent = new Intent(context, ViewStoryActivity.class);
+                Bundle storyData = new Bundle();
+                Log.i(FOOTPRINT_LOGGER, "storyID=" + selectedStory.getStoryID());
+                storyData.putInt("storyID", selectedStory.getStoryID());
+                Log.i(FOOTPRINT_LOGGER, "storyText=" + selectedStory.getText());
+                storyData.putString("storyText", selectedStory.getText());
+                Log.i(FOOTPRINT_LOGGER, "storyLocID=" + selectedStory.getLocID());
+                storyData.putInt("storyLocID", selectedStory.getLocID());
+                Log.i(FOOTPRINT_LOGGER, "StoryPlaceID=" + selectedStory.getPlaceID());
+                storyData.putInt("StoryPlaceID", selectedStory.getPlaceID());
+                Log.i(FOOTPRINT_LOGGER, "StoryEventID=" + selectedStory.getEventID());
+                storyData.putInt("StoryEventID", selectedStory.getEventID());
+                viewPlaceIntent.putExtra("storyData", storyData);
                 context.startActivity(viewPlaceIntent);
             }
         });
@@ -99,4 +99,9 @@ public class FeedPlaceRecyclerAdaptor extends RecyclerView.Adapter<FeedPlaceRecy
     public int getItemCount() {
         return mValues.size();
     }
+
+    public void setmValues(ArrayList<Story> mValues) {
+        this.mValues = mValues;
+    }
 }
+

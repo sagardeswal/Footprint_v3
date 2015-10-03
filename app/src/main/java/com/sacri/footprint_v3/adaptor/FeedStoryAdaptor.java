@@ -1,4 +1,4 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.util.Log;
@@ -32,8 +32,8 @@ public class FeedStoryAdaptor extends ArrayAdapter<Story> {
 
         String postText = getItem(position).getText();
         Log.i(FOOTPRINT_LOGGER, "Story text: " + postText);
-        TextView tvPostText = (TextView) viewPostRow.findViewById(R.id.tvStoryText);
-        ImageView ivPostThumbnail = (ImageView) viewPostRow.findViewById(R.id.ivStoryThumbnail);
+        TextView tvPostText = (TextView) viewPostRow.findViewById(R.id.tvTitle);
+        ImageView ivPostThumbnail = (ImageView) viewPostRow.findViewById(R.id.ivThumbnail);
 
         tvPostText.setText(postText);
         ivPostThumbnail.setImageResource(R.drawable.story_sample);

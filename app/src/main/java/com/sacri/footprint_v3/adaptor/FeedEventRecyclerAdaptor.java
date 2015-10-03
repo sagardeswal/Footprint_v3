@@ -1,4 +1,4 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -98,5 +98,9 @@ public class FeedEventRecyclerAdaptor extends RecyclerView.Adapter<FeedEventRecy
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setmValues(ArrayList<EventDetails> mValues) {
+        this.mValues = mValues;
     }
 }

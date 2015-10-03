@@ -1,9 +1,8 @@
-package com.sacri.footprint_v3.utils;
+package com.sacri.footprint_v3.adaptor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.sacri.footprint_v3.entity.UserDetails;
 
 /**
@@ -25,6 +24,7 @@ public class UserLocalStore {
         spEditor.putString("fullname", userDetails.getFullname());
         spEditor.putString("email", userDetails.getEmail());
         spEditor.putString("mobile", userDetails.getMobile());
+        spEditor.putString("canAddPlace", userDetails.getCanAddPlace().toString());
         spEditor.commit();
     }
 
@@ -33,7 +33,8 @@ public class UserLocalStore {
         String fullname = userDetailsLocalDatabase.getString("fullname", "");
         String email = userDetailsLocalDatabase.getString("mobile", "");
         String mobile = userDetailsLocalDatabase.getString("mobile", "");
-        UserDetails userDetails = new UserDetails(userID,fullname,email,mobile);
+        Character canAddPlace = userDetailsLocalDatabase.getString("canAddPlace", "N").charAt(0);
+        UserDetails userDetails = new UserDetails(userID,fullname,email,mobile, canAddPlace);
         return userDetails;
     }
 

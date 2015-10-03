@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.utils.UserLocalStore;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
 
 public class MainActivity extends AppCompatActivity {
 

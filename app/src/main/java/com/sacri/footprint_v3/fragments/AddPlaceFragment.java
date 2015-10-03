@@ -1,7 +1,6 @@
 package com.sacri.footprint_v3.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +32,9 @@ import com.sacri.footprint_v3.activities.AddPlaceActivity;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.PlaceDetails;
+import com.sacri.footprint_v3.entity.UserDetails;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
+
 import java.io.File;
 
 
@@ -46,7 +48,7 @@ public class AddPlaceFragment extends Fragment {
     private ImageView ivPreview;
     private PlaceDetails newPlace;
     private LatLng pickedLocation;
-
+    private UserDetails loggedUser;
     private int PLACE_PICKER_REQUEST = 1;
 
     @Override
@@ -58,7 +60,8 @@ public class AddPlaceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle SavedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_add_place, parent, false);
-
+        UserLocalStore userLocalStore = new UserLocalStore(getActivity());
+        loggedUser = userLocalStore.getLoggedInUser();
         etTitle = (EditText) v.findViewById(R.id.etTitle);
         etDescription = (EditText) v.findViewById(R.id.etDescription);
         etLocation = (EditText) v.findViewById(R.id.etLocation);
@@ -139,6 +142,8 @@ public class AddPlaceFragment extends Fragment {
                     Toast.makeText(getActivity(), "Category cannot be empty", Toast.LENGTH_SHORT).show();
                 }
 
+                newPlace.setAdminID(loggedUser.getUserID());
+
                 if (pickedLocation == null) {
                     Log.i(FOOTPRINT_LOGGER, "pickedLocation is null");
                     Location mLastLocation = ((AddPlaceActivity) getActivity()).getmLastLocation();
@@ -169,14 +174,16 @@ public class AddPlaceFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        File photoFile = ((AddPlaceActivity)getActivity()).getPhotoFile();
-        newPlace.setPhotoFile(photoFile);
-        if(photoFile!=null) {
-            Log.i(FOOTPRINT_LOGGER,"onResume photoFile not null");
-            String filePath = photoFile.getPath();
-            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-            ivPreview.setVisibility(View.VISIBLE);
-            ivPreview.setImageBitmap(bitmap);
+        if(newPlace!=null) {
+            File photoFile = ((AddPlaceActivity) getActivity()).getPhotoFile();
+            if (photoFile != null) {
+                Log.i(FOOTPRINT_LOGGER, "onResume photoFile not null");
+                newPlace.setPhotoFile(photoFile);
+                String filePath = photoFile.getPath();
+                Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+                ivPreview.setVisibility(View.VISIBLE);
+                ivPreview.setImageBitmap(bitmap);
+            }
         }
     }
 

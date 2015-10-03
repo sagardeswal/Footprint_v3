@@ -10,8 +10,8 @@ public class UserDetails {
     private String fullname;
     private String mobile;
     private String email;
-    private String role;
     private String paswordhashcode;
+    private Character canAddPlace;
 
     public UserDetails() {
     }
@@ -21,25 +21,11 @@ public class UserDetails {
         this.paswordhashcode = paswordhashcode;
     }
 
-    public UserDetails(String fullname, String mobile, String email) {
+    public UserDetails(Integer userID, String fullname, String mobile, String email, Character canAddPlace) {
+        this.canAddPlace = canAddPlace;
         this.email = email;
         this.fullname = fullname;
         this.mobile = mobile;
-    }
-
-    public UserDetails(Integer userID, String fullname, String mobile, String email) {
-        this.email = email;
-        this.fullname = fullname;
-        this.mobile = mobile;
-        this.userID = userID;
-    }
-
-    public UserDetails(String email, String fullname, String mobile, String paswordhashcode, String role, Integer userID) {
-        this.email = email;
-        this.fullname = fullname;
-        this.mobile = mobile;
-        this.paswordhashcode = paswordhashcode;
-        this.role = role;
         this.userID = userID;
     }
 
@@ -51,12 +37,12 @@ public class UserDetails {
         this.paswordhashcode = paswordhashcode;
     }
 
-    public String getRole() {
-        return role;
+    public Character getCanAddPlace() {
+        return canAddPlace;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setCanAddPlace(Character canAddPlace) {
+        this.canAddPlace = canAddPlace;
     }
 
     public String getEmail() {
@@ -95,13 +81,12 @@ public class UserDetails {
     @Override
     public String toString() {
         return "UserDetails{" +
-                "email='" + email + '\'' +
+                "canAddPlace=" + canAddPlace +
                 ", userID=" + userID +
                 ", fullname='" + fullname + '\'' +
                 ", mobile='" + mobile + '\'' +
-                ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
                 ", paswordhashcode='" + paswordhashcode + '\'' +
                 '}';
     }
-
 }

@@ -10,10 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,25 +26,16 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.callback.GetEventCallback;
-import com.sacri.footprint_v3.callback.GetPlaceCallback;
-import com.sacri.footprint_v3.callback.GetStoryCallback;
-import com.sacri.footprint_v3.dbaccess.ServerRequests;
 import com.sacri.footprint_v3.entity.EventDetails;
 import com.sacri.footprint_v3.entity.PlaceDetails;
-import com.sacri.footprint_v3.entity.Story;
 import com.sacri.footprint_v3.entity.UserDetails;
 import com.sacri.footprint_v3.fragments.DisplayOnMapFragment;
 import com.sacri.footprint_v3.fragments.FeedEventFragment;
 import com.sacri.footprint_v3.fragments.FeedPlaceFragment;
 import com.sacri.footprint_v3.fragments.FeedStoryFragment;
-import com.sacri.footprint_v3.utils.FeedEventRecyclerAdaptor;
-import com.sacri.footprint_v3.utils.FeedPagerAdaptor;
-import com.sacri.footprint_v3.utils.FeedPlaceRecyclerAdaptor;
-import com.sacri.footprint_v3.utils.UserLocalStore;
+import com.sacri.footprint_v3.adaptor.FeedPagerAdaptor;
+import com.sacri.footprint_v3.adaptor.UserLocalStore;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 public class FeedActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
@@ -56,9 +44,28 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
     private UserDetails loggedUser;
     private DrawerLayout mDrawerLayout;
     private ViewPager viewPager;
+    private FloatingActionButton fab;
     private FeedPagerAdaptor mFeedPagerAdaptor;
-    private FeedEventRecyclerAdaptor feedEventRecyclerAdaptor;
-    private FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor;
+    private final Character YES = 'Y';
+
+    private ArrayList<PlaceDetails> mPlaceDetailsArrayList = new ArrayList<>();
+    private ArrayList<EventDetails> mEventDetailsArrayList = new ArrayList<>();
+
+    public ArrayList<EventDetails> getmEventDetailsArrayList() {
+        return mEventDetailsArrayList;
+    }
+
+    public void setmEventDetailsArrayList(ArrayList<EventDetails> mEventDetailsArrayList) {
+        this.mEventDetailsArrayList = mEventDetailsArrayList;
+    }
+
+    public ArrayList<PlaceDetails> getmPlaceDetailsArrayList() {
+        return mPlaceDetailsArrayList;
+    }
+
+    public void setmPlaceDetailsArrayList(ArrayList<PlaceDetails> mPlaceDetailsArrayList) {
+        this.mPlaceDetailsArrayList = mPlaceDetailsArrayList;
+    }
 
     /**
      * Provides the entry point to Google Play services.
@@ -69,10 +76,6 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
      * Represents a geographical location.
      */
     protected Location mLastLocation;
-    private static ArrayList<PlaceDetails> mPlaceDetailsArrayList;
-    private static ArrayList<EventDetails> mEventDetailsArrayList;
-    private static ArrayList<Story> mStoryArrayList;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,17 +104,33 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
             if (viewPager != null) {
                 setupViewPager();
             }
-
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
+        if(loggedUser.getCanAddPlace()==YES){
+            Log.i(FOOTPRINT_LOGGER,"getCanAddPlace=Y");
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i(FOOTPRINT_LOGGER,"FloatingButton clicked");
+                        Intent addPlaceIntent = new Intent(view.getContext(),AddPlaceActivity.class);
+                        startActivity(addPlaceIntent);
+                    }
+                });
+            } else{
+            Log.i(FOOTPRINT_LOGGER,"getCanAddPlace=N");
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(FOOTPRINT_LOGGER,"FloatingButton clicked");
+                    Intent addEventIntent = new Intent(view.getContext(),AddEventActivity.class);
+                    startActivity(addEventIntent);
+                }
             });
+        }
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         onActivityStart();
     }
@@ -132,6 +151,14 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        if (menuItem.getTitle().equals("Logout")) {
+                            UserLocalStore userLocalStore = new UserLocalStore(getBaseContext());
+                            userLocalStore.clearUserData();
+                            userLocalStore.setUserLoggedIn(false);
+                            finish();
+                            Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         return true;
@@ -143,10 +170,6 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
 
         buildGoogleApiClient();
 
-        getPlacesInBackground();
-        getStoryDataInBackground();
-
-        getEventsInBackground();
     }
 
     @Override
@@ -201,7 +224,7 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
      * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
-        Log.i(FOOTPRINT_LOGGER,"buildGoogleApiClient()");
+        Log.i(FOOTPRINT_LOGGER, "buildGoogleApiClient()");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -236,85 +259,6 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.i(FOOTPRINT_LOGGER, "getmLastLocation()");
         return mLastLocation;
     }
-
-    private void getPlacesInBackground(){
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchPlaceDataInBackground("New Delhi", new GetPlaceCallback() {
-            @Override
-            public void done(ArrayList<PlaceDetails> placeDetailsArrayList) {
-
-                if (placeDetailsArrayList == null) {
-                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList is null");
-
-                } else {
-                    Log.i(FOOTPRINT_LOGGER, "placeDetailsArrayList.size(): " + placeDetailsArrayList.size());
-                    setMPlaceDetailsArrayList(placeDetailsArrayList);
-                    feedEventRecyclerAdaptor.notifyDataSetChanged();
-                }
-            }
-        });
-    }
-
-    public void setMPlaceDetailsArrayList(ArrayList<PlaceDetails> placeDetailsArrayList){
-        mPlaceDetailsArrayList = placeDetailsArrayList;
-    }
-
-    public ArrayList<PlaceDetails> getMPlaceDetailsArrayList(){
-        return mPlaceDetailsArrayList;
-    }
-
-    private void getEventsInBackground(){
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchEventDataInBackground("-1", new GetEventCallback() {
-            @Override
-            public void done(ArrayList<EventDetails> eventDetailsArrayList) {
-
-                if (eventDetailsArrayList == null) {
-                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList is null");
-
-                } else {
-                    Log.i(FOOTPRINT_LOGGER, "eventDetailsArrayList: " + eventDetailsArrayList.size());
-                    setMEventDetailsArrayList(eventDetailsArrayList);
-                    feedPlaceRecyclerAdaptor.notifyDataSetChanged();
-                }
-            }
-        });
-    }
-
-    public void setMEventDetailsArrayList(ArrayList<EventDetails> eventDetailsArrayList){
-        mEventDetailsArrayList = eventDetailsArrayList;
-    }
-
-    public ArrayList<EventDetails> getMEventDetailsArrayList(){
-        return mEventDetailsArrayList;
-    }
-
-
-    private void getStoryDataInBackground() {
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchStoryDataInBackground(loggedUser.getUserID().toString(), new GetStoryCallback() {
-            @Override
-            public void done(ArrayList<Story> storyArrayList) {
-
-                if (storyArrayList == null) {
-                    Log.i(FOOTPRINT_LOGGER, "storyArrayList is null");
-
-                } else {
-                    Log.i(FOOTPRINT_LOGGER, "storyArrayList.size(): " + storyArrayList.size());
-                    setmStoryArrayList(storyArrayList);
-                }
-            }
-        });
-    }
-
-    public static ArrayList<Story> getmStoryArrayList() {
-        return mStoryArrayList;
-    }
-
-    public static void setmStoryArrayList(ArrayList<Story> storyArrayList) {
-        mStoryArrayList = storyArrayList;
-    }
-
 
     private void isNetworkAndGPSAvailable(){
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -358,19 +302,7 @@ public class FeedActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    public FeedEventRecyclerAdaptor getFeedEventRecyclerAdaptor() {
-        return feedEventRecyclerAdaptor;
-    }
-
-    public void setFeedEventRecyclerAdaptor(FeedEventRecyclerAdaptor feedEventRecyclerAdaptor) {
-        this.feedEventRecyclerAdaptor = feedEventRecyclerAdaptor;
-    }
-
-    public FeedPlaceRecyclerAdaptor getFeedPlaceRecyclerAdaptor() {
-        return feedPlaceRecyclerAdaptor;
-    }
-
-    public void setFeedPlaceRecyclerAdaptor(FeedPlaceRecyclerAdaptor feedPlaceRecyclerAdaptor) {
-        this.feedPlaceRecyclerAdaptor = feedPlaceRecyclerAdaptor;
+    public UserDetails getLoggedUser() {
+        return loggedUser;
     }
 }

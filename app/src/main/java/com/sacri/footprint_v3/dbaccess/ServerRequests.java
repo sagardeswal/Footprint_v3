@@ -15,14 +15,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sacri.footprint_v3.R;
-import com.sacri.footprint_v3.activities.FeedActivity;
 import com.sacri.footprint_v3.callback.AddEventCallback;
 import com.sacri.footprint_v3.callback.AddPlaceCallback;
 import com.sacri.footprint_v3.callback.AddStoryCallback;
@@ -50,7 +48,7 @@ public class ServerRequests {
     private static final String FOOTPRINT_LOGGER = "com.sacri.footprint_v3";
     private ProgressDialog progressDialog;
 //    private Activity callingActivity;
-    private static int RESULT_LOAD_IMG = 1;
+//    private static int RESULT_LOAD_IMG = 1;
     public static final int CONNECTION_TIMEOUT = 1000 * 15;
     public static final String SERVER_ADDRESS = "http://www.footprint.comuv.com/";
     public static final String LOGIN_URL = SERVER_ADDRESS + "/login.php";
@@ -203,7 +201,8 @@ public class ServerRequests {
                     String fullname = jsonObject.getString("usr_fullname");
                     String mobile = jsonObject.getString("usr_mobile");
                     String email = jsonObject.getString("usr_email");
-                    returnedUserDetails = new UserDetails(userID,fullname, mobile, email);
+                    Character canAddPlace = jsonObject.get("can_add_place").toString().charAt(0);
+                    returnedUserDetails = new UserDetails(userID,fullname, mobile, email, canAddPlace);
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -294,6 +293,7 @@ public class ServerRequests {
             data.put("pl_category",placeDetails.getCategory());
             data.put("pl_longitude",placeDetails.getLongitude().toString());
             data.put("pl_latitude",placeDetails.getLatitude().toString());
+            data.put("pl_admin_id",placeDetails.getAdminID().toString());
 //            String filePath = placeDetails.getPhotoFile().getPath();
 //            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
 //            String imageString = getStringImage(bitmap);
@@ -360,15 +360,18 @@ public class ServerRequests {
                         String description = jsonObject.getString("pl_description");
                         int locID = jsonObject.getInt("pl_loc_id");
                         String category = jsonObject.getString("pl_category");
+                        Integer adminID = jsonObject.getInt("pl_admin_id");
                         String longitude = jsonObject.getString("pl_loc_long");
                         String latitude = jsonObject.getString("pl_loc_lat");
+
                         PlaceDetails placeDetails = new PlaceDetails(placeID,
                                 title,
                                 description,
                                 locID,
                                 category,
                                 Double.parseDouble(longitude),
-                                Double.parseDouble(latitude));
+                                Double.parseDouble(latitude),
+                                adminID);
                         placeDetailsArrayList.add(placeDetails);
                         Log.i(FOOTPRINT_LOGGER, "placeDetails : " + placeDetails.toString());
                     }
